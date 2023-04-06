@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj": {}
+    "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj": {}
   },
   "projects": {
-    "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj": {
+    "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj",
+        "projectUniqueName": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj",
         "projectName": "Ascent",
-        "projectPath": "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj",
-        "packagesPath": "C:\\Users\\Chase\\.nuget\\packages\\",
-        "outputPath": "D:\\CS4730\\team-project\\Ascent\\obj\\",
+        "projectPath": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj",
+        "packagesPath": "C:\\Users\\Student\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Chase\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -47,6 +52,10 @@
             "MonoGame.Framework.DesktopGL": {
               "target": "Package",
               "version": "[3.8.1.303, )"
+            },
+            "TiledCS": {
+              "target": "Package",
+              "version": "[3.3.3, )"
             }
           },
           "imports": [

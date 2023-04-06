@@ -54,6 +54,19 @@
             "rid": "win-x86"
           }
         }
+      },
+      "TiledCS/3.3.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/TiledCS.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/TiledCS.dll": {
+            "related": ".xml"
+          }
+        }
       }
     }
   },
@@ -93,28 +106,47 @@
         "runtimes/win-x86/native/SDL2.dll",
         "runtimes/win-x86/native/soft_oal.dll"
       ]
+    },
+    "TiledCS/3.3.3": {
+      "sha512": "YoB5tE8FoBNp9zUKCZVnnr+qKJnO54v1ke8yyx4JoIGbI4AaIrqqJwFGL93j9J/r3Po9N2YYytoUvr/rswkurA==",
+      "type": "package",
+      "path": "tiledcs/3.3.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/TiledCS.dll",
+        "lib/netstandard2.0/TiledCS.xml",
+        "tiledcs.3.3.3.nupkg.sha512",
+        "tiledcs.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
       "MonoGame.Content.Builder.Task >= 3.8.1.303",
-      "MonoGame.Framework.DesktopGL >= 3.8.1.303"
+      "MonoGame.Framework.DesktopGL >= 3.8.1.303",
+      "TiledCS >= 3.3.3"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Chase\\.nuget\\packages\\": {}
+    "C:\\Users\\Student\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj",
+      "projectUniqueName": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj",
       "projectName": "Ascent",
-      "projectPath": "D:\\CS4730\\team-project\\Ascent\\Ascent.csproj",
-      "packagesPath": "C:\\Users\\Chase\\.nuget\\packages\\",
-      "outputPath": "D:\\CS4730\\team-project\\Ascent\\obj\\",
+      "projectPath": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\Ascent.csproj",
+      "packagesPath": "C:\\Users\\Student\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Student\\Documents\\GitHub\\game-ascent\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Chase\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -122,6 +154,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -147,6 +180,10 @@
           "MonoGame.Framework.DesktopGL": {
             "target": "Package",
             "version": "[3.8.1.303, )"
+          },
+          "TiledCS": {
+            "target": "Package",
+            "version": "[3.3.3, )"
           }
         },
         "imports": [
