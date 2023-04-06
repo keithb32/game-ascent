@@ -12,6 +12,19 @@ using TiledCS;
 
 namespace Ascent.Environment
 {
+    // This class handles parsing, loading, and rendering tiled files, as well as tile collisions and interactions.
+    // A couple notes on constructing tiled files:
+    // This class expects a tile layer titled "Ground" that contains all of the tiles that the player should collide with.
+
+    // It can also handle a second tile layer called "Semisolids" that will contain all of the tiles that the player should treat as a semisolid (meaning, they can land on it but can also jump up thorugh it)
+
+    // It can also handle an object layer titled "Goal", that contains one object. The tile manager will place a goal object (right now, a gem that moves the player to the next level) at the position of that object.
+    // It can also handle an object layer titled "Boxes", that contains any number of objects. It will spawn a box at the position of every object in that object layer.
+    // It can also handle an object layer titled "Pickups" that contains any number of objects. It will spawn a cherry pickup at the position of every object in that object layer.
+
+    // Finally, it also works fine with any Tile Layers named anything else- for these layers, it'll render/draw the layer, but not give that layer any collision (useful for background objects, grass, etc.)
+
+    // only the "Ground" tile layer is required for it to run- all the other layers are optional as you need them.
     internal class TileManager
     {
         private TiledMap map;
@@ -220,6 +233,7 @@ namespace Ascent.Environment
             }
 
             // done drawing the tiles
+            // now draw the pickups/boxes/goal (if any)
             if(goal != null)
             {
                 goal.Draw(_spriteBatch);

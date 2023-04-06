@@ -83,7 +83,7 @@ namespace Ascent
             
             HandleInput(gameTime);
 
-            player1.Update(gameTime, keyboardState, gamePadState, GameBounds, tiles, tiles.boxes);
+            player1.Update(gameTime, keyboardState, gamePadState, GameBounds, tiles);
             tiles.Update(gameTime, GameBounds, player1);
 
 

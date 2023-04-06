@@ -12,6 +12,7 @@ using Ascent.Environment;
 
 namespace Ascent.Player_and_Objects
 {
+    // The class for the player!
     internal class Player : Sprite
     {
         // collider
@@ -21,6 +22,10 @@ namespace Ascent.Player_and_Objects
         private Rectangle FeetRect;
 
         private Vector2 _position;
+
+        // Note: whenever updating the player's position, make sure to change the entire Position Vector2 and not just the X or Y of the Vector2!
+        // This is important to cause the below code to run, which propogates the change to the player's hitboxes and sprite.
+        // For example, don't use "Position.X = 5"; , use "Position = new Vector2( 5, Position.Y)";
         public Vector2 Position
         {
             get { return _position; }
@@ -36,17 +41,21 @@ namespace Ascent.Player_and_Objects
         }
         private Vector2 velocity1;
 
-
+        // values used to control charging the dash
         private float chargeAmount = 10f;
         private float chargeMax = 90f;
 
+        // movement parameters
         private float acceleration = 1.2f;
         private float MaxMoveSpeed = 15f;
 
+        // gravity strength
         private float gravity = 1.0f;
 
+        // current facing direction
         public string facingDirection = "Right";
 
+        // current state of the player
         private enum playerState
         {
             Move,
@@ -82,10 +91,10 @@ namespace Ascent.Player_and_Objects
             Position = new Vector2(20, 20);
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState, GamePadState gamePadState, Point GameBounds, TileManager tiles, List<Box> boxes)
+        public void Update(GameTime gameTime, KeyboardState keyboardState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
         {
 
-            bool isGrounded = checkIfGrounded(GameBounds, tiles, boxes);
+            bool isGrounded = checkIfGrounded(GameBounds, tiles);
             string animationToPlay = "Idle";
 
             // check player's current state
@@ -197,7 +206,7 @@ namespace Ascent.Player_and_Objects
             }
 
             // try to move the player according to their velocity
-            HandlePhysics(GameBounds, tiles, boxes);
+            HandlePhysics(GameBounds, tiles);
 
             // interact with non-collidables in the tileset, including picking up pickups and reaching the goal flag
             tiles.DoObjectInteraction(Rect);
@@ -246,18 +255,18 @@ namespace Ascent.Player_and_Objects
         }
 
         // check if the player is currently grounded.
-        private bool checkIfGrounded(Point GameBounds, TileManager tiles, List<Box> boxes)
+        private bool checkIfGrounded(Point GameBounds, TileManager tiles)
         {
             bool ret = false;
             Position += new Vector2(0, 1);
-            ret = checkBounds(Rect, GameBounds, tiles) || checkBoundsWithSemisolids(FeetRect, tiles) || checkBoundsWithBox(Rect, boxes).Count > 0;
+            ret = checkBounds(Rect, GameBounds, tiles) || checkBoundsWithSemisolids(FeetRect, tiles) || checkBoundsWithBox(Rect, tiles.boxes).Count > 0;
             Position -= new Vector2(0, 1);
             return ret;
         }
 
         // attempts to move the player according to their velocity for this update step.
         // if that movement would cause them to collide with something, don't move and reset velocity instead.
-        private void HandlePhysics(Point GameBounds, TileManager tiles, List<Box> boxes)
+        private void HandlePhysics(Point GameBounds, TileManager tiles)
         {
             // apply some forces (horizontal drag and gravity)
             velocity1.X *= 0.9f;
@@ -269,7 +278,7 @@ namespace Ascent.Player_and_Objects
             // define a rectangle that covers the new x position for collider and the old x position for the collider, plus everything that's in between them
             Rectangle MoveXRect = new Rectangle(Math.Min(Rect.X, Rect.X + (int)velocity1.X), Rect.Y, Rect.Width + Math.Abs((int)velocity1.X), Rect.Height);
 
-            List<Box> boxCollisions = checkBoundsWithBox(MoveXRect, boxes);
+            List<Box> boxCollisions = checkBoundsWithBox(MoveXRect, tiles.boxes);
 
 
             // see if that collider intersects with anything; if it does, stop velocity in that direction. Otherwise, move it there.
@@ -322,7 +331,7 @@ namespace Ascent.Player_and_Objects
             // do the same for the feet rectangle (for semisolids)
             Rectangle MoveFeetRect = new Rectangle(FeetRect.X, Math.Min(FeetRect.Y, FeetRect.Y + (int)velocity1.Y), FeetRect.Width, FeetRect.Height + (int)velocity1.Y);
 
-            boxCollisions = checkBoundsWithBox(MoveYRect, boxes);
+            boxCollisions = checkBoundsWithBox(MoveYRect, tiles.boxes);
 
             // see if those colliders collide with anything; if they do, stop velocity in that direction. Otherwise, move it there.
             if (checkBounds(MoveYRect, GameBounds, tiles) || (velocity1.Y > 0 && checkBoundsWithSemisolids(MoveFeetRect, tiles)))

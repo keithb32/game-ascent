@@ -44,14 +44,7 @@ namespace Ascent.Player_and_Objects
 
         public void Update(Point GameBounds, TileManager tiles, Player player)
         {
-            //foreach(Vector2 force in ForcesToAdd)
-            //{
-            //    Debug.Log(force)
-            //    velocity += force;
-            //}
-            //ForcesToAdd = new Queue<Vector2>();
             HandlePhysics(GameBounds, tiles, player);
-            //Debug.WriteLine(velocity);
         }
 
         private bool checkBounds(Rectangle CollisionRect, Point GameBounds, TileManager tiles, Player player)
@@ -142,6 +135,8 @@ namespace Ascent.Player_and_Objects
 
         }
 
+        // the player calls this on the box when trying to push it by walking into it horizontally
+        // see if you can be pushed; if not return false and don't move. If you can be, return true and move.
         public bool PushX(float xPush, Point GameBounds, TileManager tiles, Player player)
         {
             // try to move it in the x direction
@@ -162,6 +157,8 @@ namespace Ascent.Player_and_Objects
             }
         }
 
+        // the player calls this on the box when trying to push it by moving into it vertically
+        // see if you can be pushed; if not return false and don't move. If you can be, return true and move.
         public bool PushY(float yPush, Point GameBounds, TileManager tiles, Player player)
         {
             // try to move in the y direction
@@ -184,6 +181,8 @@ namespace Ascent.Player_and_Objects
             }
         }
 
+        // called to tranfer a force directly onto the box
+        // currently called when player hits the box when dashing.
         public void TransferForce(Vector2 Force)
         {
             velocity += Force;

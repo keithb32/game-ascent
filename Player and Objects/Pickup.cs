@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 
 namespace Ascent.Player_and_Objects
 {
+    // sprite with a hitbox that lets it be picked up.
+    // logic for the picking up is handled by the TileManager. The hitbox is automatically made to be the size and position of the sprite.
     public class Pickup : Sprite
     {
         public Rectangle hitbox;

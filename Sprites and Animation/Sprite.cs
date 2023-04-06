@@ -8,9 +8,16 @@ using System.Threading.Tasks;
 
 namespace Ascent.Sprites_and_Animation
 {
+    // The base class for anything that needs to render a sprite on the screen. Can be inhereted from to easily produce sprites with various properties
+    // (see Player.cs, Box.cs, and Pickup.cs for some examples)
+    // Derived from this tutorial: https://www.youtube.com/watch?v=OLsiWxgONeM
     public class Sprite
     {
         private Vector2 _spritePosition;
+
+        // note: if you want the position of the sprite to change, you'll have to update the SpritePosition field here. Make sure to change the entire Vector2 at once, not just the X or Y.
+        // This is important for the change to propogate to the animation manager.
+        // for an example on how to get it to happen automatically, check out the position field of the player or the boxes.
         public Vector2 SpritePosition
         {
             get { return _spritePosition; }

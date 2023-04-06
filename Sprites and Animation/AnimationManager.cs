@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Ascent.Sprites_and_Animation
 {
+    // Manages animations for Sprites.
+    // Derived from this tutorial: https://www.youtube.com/watch?v=OLsiWxgONeM
     public class AnimationManager
     {
         private Animation _animation;

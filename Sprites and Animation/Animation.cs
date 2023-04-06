@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Ascent.Sprites_and_Animation
 {
+    // helper class for animations/sprites.
+    // Derived from this tutorial: https://www.youtube.com/watch?v=OLsiWxgONeM
     public class Animation
     {
         public int CurrentFrame { get; set; }
