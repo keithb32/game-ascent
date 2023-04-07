@@ -22,7 +22,16 @@ namespace Ascent.Player_and_Objects
         private Rectangle FeetRect;
 
         private Vector2 _position;
-
+        
+        private Vector2 _grapplePoint;
+        public Vector2 GrapplePoint
+        {
+            get { return _grapplePoint; }
+            set
+            {
+                _grapplePoint = value;
+            }
+        }
         // Note: whenever updating the player's position, make sure to change the entire Position Vector2 and not just the X or Y of the Vector2!
         // This is important to cause the below code to run, which propogates the change to the player's hitboxes and sprite.
         // For example, don't use "Position.X = 5"; , use "Position = new Vector2( 5, Position.Y)";
@@ -39,7 +48,7 @@ namespace Ascent.Player_and_Objects
                 SpritePosition = new Vector2(_position.X, _position.Y);
             }
         }
-        private Vector2 velocity1;
+        private Vector2 velocity;
 
         // values used to control charging the dash
         private float chargeAmount = 10f;
@@ -61,7 +70,8 @@ namespace Ascent.Player_and_Objects
             Move,
             Charge,
             Launch,
-            LaunchLag
+            LaunchLag,
+            Grapple
         }
 
         private playerState state = playerState.Move;
@@ -89,12 +99,29 @@ namespace Ascent.Player_and_Objects
             Rect = new Rectangle(10, 10, 40, 60);
             FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 2, Rect.Width, 2);
             Position = new Vector2(20, 20);
+            GrapplePoint = new Vector2(-1, -1);
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
+        public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
         {
 
             bool isGrounded = checkIfGrounded(GameBounds, tiles);
+            
+            // Check if the player is grappling
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                state = playerState.Grapple;
+            }
+            else
+            {
+                // player must hold down mouse to swing, and if they let go, reset the grapple point
+                GrapplePoint = new Vector2(-1, -1);
+                if (state == playerState.Grapple)
+                {
+                    state = playerState.Move;
+                }
+            }
+            
             string animationToPlay = "Idle";
 
             // check player's current state
@@ -106,7 +133,7 @@ namespace Ascent.Player_and_Objects
                 if (keyboardState.IsKeyDown(Keys.A) || gamePadState.IsButtonDown(Buttons.DPadLeft) || gamePadState.ThumbSticks.Left.X < -0.2f)
                 {
                     facingDirection = "Left";
-                    velocity1.X = MathHelper.Clamp(velocity1.X - acceleration, -MaxMoveSpeed, MaxMoveSpeed);
+                    velocity.X = MathHelper.Clamp(velocity.X - acceleration, -MaxMoveSpeed, MaxMoveSpeed);
                     if (isGrounded)
                     {
                         animationToPlay = "Walk";
@@ -115,7 +142,7 @@ namespace Ascent.Player_and_Objects
                 if (keyboardState.IsKeyDown(Keys.D) || gamePadState.IsButtonDown(Buttons.DPadRight) || gamePadState.ThumbSticks.Left.X > 0.2f)
                 {
                     facingDirection = "Right";
-                    velocity1.X = MathHelper.Clamp(velocity1.X + acceleration, -MaxMoveSpeed, MaxMoveSpeed);
+                    velocity.X = MathHelper.Clamp(velocity.X + acceleration, -MaxMoveSpeed, MaxMoveSpeed);
                     if (isGrounded)
                     {
                         animationToPlay = "Walk";
@@ -125,15 +152,15 @@ namespace Ascent.Player_and_Objects
                 // jumping
                 if (keyboardState.IsKeyDown(Keys.W) || gamePadState.IsButtonDown(Buttons.X) || gamePadState.IsButtonDown(Buttons.A))
                 {
-                    if (isGrounded && velocity1.Y >= 0)
+                    if (isGrounded && velocity.Y >= 0)
                     {
-                        velocity1.Y = -20f;
+                        velocity.Y = -20f;
                         animationToPlay = "Jump";
                     }
                 }
                 if (!isGrounded)
                 {
-                    if (velocity1.Y < 0f)
+                    if (velocity.Y < 0f)
                     {
                         animationToPlay = "Jump";
                     }
@@ -149,6 +176,32 @@ namespace Ascent.Player_and_Objects
                     state = playerState.Charge;
                     animationToPlay = "Crouch";
                 }
+            }
+            else if (state == playerState.Grapple)
+            {
+                // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
+                if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
+                {
+                    GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
+                }
+                
+                // add gravity to the player
+                velocity.Y += gravity;
+                
+                // Calculate the line between the player and the grapple point
+                Vector2 grappleLine = GrapplePoint - Position;
+                
+                // Calculate the distance between the player and the grapple point
+                float grappleDistance = grappleLine.Length();
+                
+                // Calculate the tangential vector of the grapple line
+                Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
+                grappleTangent.Normalize();
+                // project current velocity onto grappleTangent
+                Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
+
+
+                velocity = projectedVelocity;
             }
             else if (state == playerState.Charge)
             {
@@ -186,11 +239,11 @@ namespace Ascent.Player_and_Objects
                 animationToPlay = "Crouch";
                 if (facingDirection == "Left")
                 {
-                    velocity1 += new Vector2(-1f, -0.2f) * chargeAmount;
+                    velocity += new Vector2(-1f, -0.2f) * chargeAmount;
                 }
                 else
                 {
-                    velocity1 += new Vector2(1f, -0.2f) * chargeAmount;
+                    velocity += new Vector2(1f, -0.2f) * chargeAmount;
                 }
                 state = playerState.LaunchLag;
             }
@@ -199,7 +252,7 @@ namespace Ascent.Player_and_Objects
                 // player is launching during a dash (no input until they slow down a bit)
 
                 animationToPlay = "Jump";
-                if (Math.Abs(velocity1.X) <= 15f)
+                if (Math.Abs(velocity.X) <= 15f)
                 {
                     state = playerState.Move;
                 }
@@ -268,15 +321,26 @@ namespace Ascent.Player_and_Objects
         // if that movement would cause them to collide with something, don't move and reset velocity instead.
         private void HandlePhysics(Point GameBounds, TileManager tiles)
         {
-            // apply some forces (horizontal drag and gravity)
-            velocity1.X *= 0.9f;
+            // apply some damping forces (horizontal drag and gravity)
 
-            velocity1.Y += gravity;
+            if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
+            {
+                velocity.Y += gravity;
+                // if grounded, apply x damping factor of 0.9. otherwise, apply x damping factor of 0.95.
+                if (checkIfGrounded(GameBounds, tiles))
+                {
+                    velocity.X *= 0.9f;
+                }
+                else
+                {
+                    velocity.X *= 0.99f;
+                }
+            }
 
             // first try to move it in the x direction
 
             // define a rectangle that covers the new x position for collider and the old x position for the collider, plus everything that's in between them
-            Rectangle MoveXRect = new Rectangle(Math.Min(Rect.X, Rect.X + (int)velocity1.X), Rect.Y, Rect.Width + Math.Abs((int)velocity1.X), Rect.Height);
+            Rectangle MoveXRect = new Rectangle(Math.Min(Rect.X, Rect.X + (int)velocity.X), Rect.Y, Rect.Width + Math.Abs((int)velocity.X), Rect.Height);
 
             List<Box> boxCollisions = checkBoundsWithBox(MoveXRect, tiles.boxes);
 
@@ -286,11 +350,11 @@ namespace Ascent.Player_and_Objects
             {
                 if (state == playerState.LaunchLag)
                 {
-                    velocity1.X = -0.2f * velocity1.X;
+                    velocity.X = -0.2f * velocity.X;
                 }
                 else
                 {
-                    velocity1.X = 0;
+                    velocity.X = 0;
                 }
             }
             else if (boxCollisions.Count > 0)
@@ -300,43 +364,43 @@ namespace Ascent.Player_and_Objects
                     if (state == playerState.LaunchLag)
                     {
                         // if currently launching with space, transfer your force to the box and bounce back a bit
-                        box.TransferForce(new Vector2(velocity1.X, 0));
-                        velocity1.X = -0.1f * velocity1.X;
+                        box.TransferForce(new Vector2(velocity.X, 0));
+                        velocity.X = -0.1f * velocity.X;
                     }
                     else
                     {
                         // if not currently launching, then just push it in front of you
-                        if (box.PushX(velocity1.X * 0.9f, GameBounds, tiles, this))
+                        if (box.PushX(velocity.X * 0.9f, GameBounds, tiles, this))
                         {
-                            velocity1.X *= 0.9f;
-                            Position += new Vector2((int)velocity1.X, 0);
+                            velocity.X *= 0.9f;
+                            Position += new Vector2((int)velocity.X, 0);
                         }
                         else
                         {
-                            velocity1.X = 0;
+                            velocity.X = 0;
                         }
                     }
                 }
             }
             else
             {
-                Position += new Vector2((int)velocity1.X, 0);
+                Position += new Vector2((int)velocity.X, 0);
             }
 
             // now try to move in the y direction
 
             // define a rectangle that covers the new x position for collider and the old x position for the collider, plus everything that's in between them
-            Rectangle MoveYRect = new Rectangle(Rect.X, Math.Min(Rect.Y, Rect.Y + (int)velocity1.Y), Rect.Width, Rect.Height + (int)velocity1.Y);
+            Rectangle MoveYRect = new Rectangle(Rect.X, Math.Min(Rect.Y, Rect.Y + (int)velocity.Y), Rect.Width, Rect.Height + (int)velocity.Y);
 
             // do the same for the feet rectangle (for semisolids)
-            Rectangle MoveFeetRect = new Rectangle(FeetRect.X, Math.Min(FeetRect.Y, FeetRect.Y + (int)velocity1.Y), FeetRect.Width, FeetRect.Height + (int)velocity1.Y);
+            Rectangle MoveFeetRect = new Rectangle(FeetRect.X, Math.Min(FeetRect.Y, FeetRect.Y + (int)velocity.Y), FeetRect.Width, FeetRect.Height + (int)velocity.Y);
 
             boxCollisions = checkBoundsWithBox(MoveYRect, tiles.boxes);
 
             // see if those colliders collide with anything; if they do, stop velocity in that direction. Otherwise, move it there.
-            if (checkBounds(MoveYRect, GameBounds, tiles) || (velocity1.Y > 0 && checkBoundsWithSemisolids(MoveFeetRect, tiles)))
+            if (checkBounds(MoveYRect, GameBounds, tiles) || (velocity.Y > 0 && checkBoundsWithSemisolids(MoveFeetRect, tiles)))
             {
-                velocity1.Y = 0;
+                velocity.Y = 0;
             }
             else if (boxCollisions.Count > 0)
             {
@@ -345,28 +409,28 @@ namespace Ascent.Player_and_Objects
                     if (state == playerState.LaunchLag)
                     {
                         // if currently launching with space, transfer your force to the box and bounce back a bit
-                        box.TransferForce(new Vector2(0, velocity1.Y));
-                        velocity1.Y = -0.1f * velocity1.Y;
+                        box.TransferForce(new Vector2(0, velocity.Y));
+                        velocity.Y = -0.1f * velocity.Y;
                     }
                     else
                     {
                         // if not currently launching, then just push it a bit
-                        if (box.PushY(velocity1.Y * 0.9f, GameBounds, tiles, this))
+                        if (box.PushY(velocity.Y * 0.9f, GameBounds, tiles, this))
                         {
-                            velocity1.Y *= 0.9f;
-                            Position += new Vector2(0, (int)velocity1.Y);
+                            velocity.Y *= 0.9f;
+                            Position += new Vector2(0, (int)velocity.Y);
                         }
                         else
                         {
-                            velocity1.Y = 0;
+                            velocity.Y = 0;
                         }
-                        velocity1.Y = 0;
+                        velocity.Y = 0;
                     }
                 }
             }
             else
             {
-                Position += new Vector2(0, (int)velocity1.Y);
+                Position += new Vector2(0, (int)velocity.Y);
             }
 
         }
@@ -381,11 +445,17 @@ namespace Ascent.Player_and_Objects
 
         // Note: you can uncomment the following function to debug the player's hitbox (shows both player hitbox and feet hitbox over the sprite)
 
-        //public void Draw(SpriteBatch _spriteBatch)
-        //{
-        //    _animationManager.Draw(_spriteBatch);
-        //    _spriteBatch.Draw(Texture, new Vector2(Rect.X, Rect.Y), Rect, Microsoft.Xna.Framework.Color.White * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);  // uncomment to see player collision box
-        //    _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Microsoft.Xna.Framework.Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f); // uncomment to see feet rectangle
-        //}
+        public void Draw(SpriteBatch _spriteBatch)
+        {
+            _animationManager.Draw(_spriteBatch);
+            _spriteBatch.Draw(Texture, new Vector2(Rect.X, Rect.Y), Rect, Microsoft.Xna.Framework.Color.White * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);  // uncomment to see player collision box
+            _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Microsoft.Xna.Framework.Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f); // uncomment to see feet rectangle
+            // Draw grapple point
+            _spriteBatch.Draw(Texture, GrapplePoint, new Rectangle(0, 0, 5, 5), Microsoft.Xna.Framework.Color.Red * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
+            // Draw line between player and grapple point
+            _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Red * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)), Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
+            // Draw tangent line
+            _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Blue * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)) + (float)Math.PI / 2, Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace Ascent
         // inputs
         private KeyboardState keyboardState;
         private GamePadState gamePadState;
+        private MouseState mouseState;
 
         public Game1()
         {
@@ -83,7 +84,7 @@ namespace Ascent
             
             HandleInput(gameTime);
 
-            player1.Update(gameTime, keyboardState, gamePadState, GameBounds, tiles);
+            player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
             tiles.Update(gameTime, GameBounds, player1);
 
 
@@ -98,6 +99,7 @@ namespace Ascent
             {
                 gamePadState = GamePad.GetState(PlayerIndex.One);
             }
+            mouseState = Mouse.GetState();
         }
 
         protected override void Draw(GameTime gameTime)
