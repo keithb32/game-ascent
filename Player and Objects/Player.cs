@@ -24,6 +24,8 @@ namespace Ascent.Player_and_Objects
         private Vector2 _position;
         
         private Vector2 _grapplePoint;
+        
+        private float _grappleDistance;
         public Vector2 GrapplePoint
         {
             get { return _grapplePoint; }
@@ -179,10 +181,30 @@ namespace Ascent.Player_and_Objects
             }
             else if (state == playerState.Grapple)
             {
+                // move left/right
+                if (keyboardState.IsKeyDown(Keys.A) || gamePadState.IsButtonDown(Buttons.DPadLeft) || gamePadState.ThumbSticks.Left.X < -0.2f)
+                {
+                    facingDirection = "Left";
+                    velocity.X = MathHelper.Clamp(velocity.X - acceleration, -MaxMoveSpeed, MaxMoveSpeed);
+                    if (isGrounded)
+                    {
+                        animationToPlay = "Walk";
+                    }
+                }
+                if (keyboardState.IsKeyDown(Keys.D) || gamePadState.IsButtonDown(Buttons.DPadRight) || gamePadState.ThumbSticks.Left.X > 0.2f)
+                {
+                    facingDirection = "Right";
+                    velocity.X = MathHelper.Clamp(velocity.X + acceleration, -MaxMoveSpeed, MaxMoveSpeed);
+                    if (isGrounded)
+                    {
+                        animationToPlay = "Walk";
+                    }
+                }
                 // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
                 if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
                 {
                     GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
+                    _grappleDistance = Vector2.Distance(GrapplePoint, Position);
                 }
                 
                 // add gravity to the player
@@ -191,17 +213,22 @@ namespace Ascent.Player_and_Objects
                 // Calculate the line between the player and the grapple point
                 Vector2 grappleLine = GrapplePoint - Position;
                 
-                // Calculate the distance between the player and the grapple point
-                float grappleDistance = grappleLine.Length();
+                Vector2 tangentLine = new Vector2(-grappleLine.Y, grappleLine.X);
                 
-                // Calculate the tangential vector of the grapple line
-                Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
-                grappleTangent.Normalize();
-                // project current velocity onto grappleTangent
-                Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
+                tangentLine.Normalize();
+                
+                // Calculate the distance between the player and the grapple point
+                double r = _grappleDistance;
+                
+                // calculate the angle between the player and the grapple point
+                double theta = Math.Atan2(grappleLine.Y, grappleLine.X);
 
-
-                velocity = projectedVelocity;
+                const float angularVelocity = 0.01f;
+                
+                theta += angularVelocity;
+                
+                // var displacedPosition = new Vector2((float)(r * Math.Sin(theta)), (float)(r * Math.Cos(theta)));
+                velocity += tangentLine * angularVelocity * (float)r;
             }
             else if (state == playerState.Charge)
             {
