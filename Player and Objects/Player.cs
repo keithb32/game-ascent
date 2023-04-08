@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ascent.Environment;
+using System.Reflection.Metadata;
 
 namespace Ascent.Player_and_Objects
 {
@@ -22,16 +23,6 @@ namespace Ascent.Player_and_Objects
         private Rectangle FeetRect;
 
         private Vector2 _position;
-        
-        private Vector2 _grapplePoint;
-        public Vector2 GrapplePoint
-        {
-            get { return _grapplePoint; }
-            set
-            {
-                _grapplePoint = value;
-            }
-        }
         // Note: whenever updating the player's position, make sure to change the entire Position Vector2 and not just the X or Y of the Vector2!
         // This is important to cause the below code to run, which propogates the change to the player's hitboxes and sprite.
         // For example, don't use "Position.X = 5"; , use "Position = new Vector2( 5, Position.Y)";
@@ -49,6 +40,18 @@ namespace Ascent.Player_and_Objects
             }
         }
         private Vector2 velocity;
+
+        // values used to control swinging
+        private Vector2 _grapplePoint;
+        public Vector2 GrapplePoint
+        {
+            get { return _grapplePoint; }
+            set
+            {
+                _grapplePoint = value;
+            }
+        }
+        private float grappleHookLength = 0f;
 
         // values used to control charging the dash
         private float chargeAmount = 10f;
@@ -71,7 +74,7 @@ namespace Ascent.Player_and_Objects
             Charge,
             Launch,
             LaunchLag,
-            Grapple
+            Swing
         }
 
         private playerState state = playerState.Move;
@@ -110,13 +113,13 @@ namespace Ascent.Player_and_Objects
             // Check if the player is grappling
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                state = playerState.Grapple;
+                state = playerState.Swing;
             }
             else
             {
                 // player must hold down mouse to swing, and if they let go, reset the grapple point
                 GrapplePoint = new Vector2(-1, -1);
-                if (state == playerState.Grapple)
+                if (state == playerState.Swing)
                 {
                     state = playerState.Move;
                 }
@@ -177,7 +180,7 @@ namespace Ascent.Player_and_Objects
                     animationToPlay = "Crouch";
                 }
             }
-            else if (state == playerState.Grapple)
+            else if (state == playerState.Swing)
             {
                 // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
                 if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
@@ -187,21 +190,39 @@ namespace Ascent.Player_and_Objects
                 
                 // add gravity to the player
                 velocity.Y += gravity;
-                
+
                 // Calculate the line between the player and the grapple point
                 Vector2 grappleLine = GrapplePoint - Position;
-                
-                // Calculate the distance between the player and the grapple point
                 float grappleDistance = grappleLine.Length();
-                
+                grappleLine.Normalize();
+
+                // Set grappleHookLength if the player just fired their grapple hook
+                grappleHookLength = (grappleHookLength == 0) ? grappleDistance : grappleHookLength;
+
+                // Calculate the player's velocity tangential to the circle around the grapple point
+                Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
+                grappleTangent.Normalize();
+                Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
+
+                // Change projected velocity to desired magnitude (this step might not be necessary)
+                float desiredMagnitude = 15f;
+                projectedVelocity = (desiredMagnitude / projectedVelocity.Length()) * projectedVelocity;
+
+                // Calculate the centripetal force needed to keep the player in uniform circular motion
+                Vector2 centripetalForce = grappleLine * (projectedVelocity.LengthSquared() / grappleHookLength);
+
+                // Apply the centripetal force
+                velocity = projectedVelocity + centripetalForce;
+
+                /*
                 // Calculate the tangential vector of the grapple line
                 Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
                 grappleTangent.Normalize();
                 // project current velocity onto grappleTangent
                 Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
 
-
                 velocity = projectedVelocity;
+                */
             }
             else if (state == playerState.Charge)
             {
