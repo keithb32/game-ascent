@@ -1,7 +1,6 @@
-﻿using Ascent.Sprites_and_Animation;
+﻿using Microsoft.Xna.Framework.Input;using Ascent.Sprites_and_Animation;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,7 @@ namespace Ascent.Player_and_Objects
     // The class for the player!
     internal class Player : Sprite
     {
+        private const bool DebugMode = false;
         // collider
         public Rectangle Rect;
 
@@ -76,6 +76,8 @@ namespace Ascent.Player_and_Objects
 
         private playerState state = playerState.Move;
 
+        private Texture2D tether;
+
         public Player(ContentManager Content) : base(
                 new Dictionary<string, Animation>()
                 {
@@ -100,6 +102,7 @@ namespace Ascent.Player_and_Objects
             FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 2, Rect.Width, 2);
             Position = new Vector2(20, 20);
             GrapplePoint = new Vector2(-1, -1);
+            tether = Content.Load<Texture2D>("Player/tether");
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
@@ -442,20 +445,44 @@ namespace Ascent.Player_and_Objects
             sb.Draw(Texture, pos, Rec, color * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
         }
 
+        // https://stackoverflow.com/questions/16403809/drawing-lines-in-c-sharp-with-xna
+        public void DrawLine(SpriteBatch spriteBatch, Vector2 begin, Vector2 end, Color color, int width = 1)
+        {
+            Rectangle r = new Rectangle((int)begin.X, (int)begin.Y, (int)(end - begin).Length() + width, width);
+            Vector2 v = Vector2.Normalize(begin - end);
+            float angle = (float)Math.Acos(Vector2.Dot(v, -Vector2.UnitX));
+            if (begin.Y > end.Y) angle = MathHelper.TwoPi - angle;
+            spriteBatch.Draw(tether, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
+        }
+
 
         // Note: you can uncomment the following function to debug the player's hitbox (shows both player hitbox and feet hitbox over the sprite)
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             _animationManager.Draw(_spriteBatch);
-            _spriteBatch.Draw(Texture, new Vector2(Rect.X, Rect.Y), Rect, Microsoft.Xna.Framework.Color.White * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);  // uncomment to see player collision box
-            _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Microsoft.Xna.Framework.Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f); // uncomment to see feet rectangle
-            // Draw grapple point
-            _spriteBatch.Draw(Texture, GrapplePoint, new Rectangle(0, 0, 5, 5), Microsoft.Xna.Framework.Color.Red * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
-            // Draw line between player and grapple point
-            _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Red * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)), Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
-            // Draw tangent line
-            _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Blue * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)) + (float)Math.PI / 2, Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
+            if (state == playerState.Grapple)
+            {
+                DrawLine(_spriteBatch, Position, GrapplePoint, Color.White, 3);
+            }
+
+            if (DebugMode)
+            {
+                // Draw line between player and grapple point
+                DrawLine(_spriteBatch, Position, GrapplePoint, Color.Red, 1);
+
+                // Draw grapple point
+                _spriteBatch.Draw(Texture, GrapplePoint, new Rectangle(0, 0, 5, 5), Color.Red * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
+
+                // Draw tangent line
+                _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Color.Blue * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)) + (float)Math.PI / 2, Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
+
+                // main collision box
+                _spriteBatch.Draw(Texture, new Vector2(Rect.X, Rect.Y), Rect, Color.White * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
+
+                // feet rectangle
+                _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/Student/Documents/GitHub/game-ascent/Content/Objects/crate.png</SourceFile>
-  <SourceTime>2023-02-19T23:30:22.9620384-05:00</SourceTime>
-  <DestFile>C:/Users/Student/Documents/GitHub/game-ascent/Content/bin/DesktopGL/Objects/crate.xnb</DestFile>
-  <DestTime>2023-04-06T03:19:35.9321655-04:00</DestTime>
+  <SourceFile>D:/CS4730/team-project/game-ascent/Content/Objects/crate.png</SourceFile>
+  <SourceTime>2023-04-08T11:28:04.7915604-04:00</SourceTime>
+  <DestFile>D:/CS4730/team-project/game-ascent/Content/bin/DesktopGL/Objects/crate.xnb</DestFile>
+  <DestTime>2023-04-08T12:22:09.5454893-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2022-07-26T07:44:56-04:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
