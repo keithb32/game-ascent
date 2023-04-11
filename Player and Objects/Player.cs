@@ -473,7 +473,7 @@ namespace Ascent.Player_and_Objects
         public void Draw(SpriteBatch _spriteBatch)
         {
             _animationManager.Draw(_spriteBatch);
-            if (state == playerState.Grapple)
+            if (state == playerState.Swing)
             {
                 DrawLine(_spriteBatch, Position, GrapplePoint, Color.White, 3);
             }
