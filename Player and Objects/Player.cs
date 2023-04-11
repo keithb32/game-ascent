@@ -214,15 +214,6 @@ namespace Ascent.Player_and_Objects
                 // Apply the centripetal force
                 velocity = projectedVelocity + centripetalForce;
 
-                /*
-                // Calculate the tangential vector of the grapple line
-                Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
-                grappleTangent.Normalize();
-                // project current velocity onto grappleTangent
-                Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
-
-                velocity = projectedVelocity;
-                */
             }
             else if (state == playerState.Charge)
             {
@@ -469,6 +460,7 @@ namespace Ascent.Player_and_Objects
         public void Draw(SpriteBatch _spriteBatch)
         {
             _animationManager.Draw(_spriteBatch);
+            /*
             _spriteBatch.Draw(Texture, new Vector2(Rect.X, Rect.Y), Rect, Microsoft.Xna.Framework.Color.White * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);  // uncomment to see player collision box
             _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Microsoft.Xna.Framework.Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f); // uncomment to see feet rectangle
             // Draw grapple point
@@ -477,6 +469,7 @@ namespace Ascent.Player_and_Objects
             _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Red * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)), Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
             // Draw tangent line
             _spriteBatch.Draw(Texture, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2), new Rectangle(0, 0, 1, 1), Microsoft.Xna.Framework.Color.Blue * 1.0f, (float)Math.Atan2(GrapplePoint.Y - (Rect.Y + Rect.Height / 2), GrapplePoint.X - (Rect.X + Rect.Width / 2)) + (float)Math.PI / 2, Vector2.Zero, new Vector2(Vector2.Distance(GrapplePoint, new Vector2(Rect.X + Rect.Width / 2, Rect.Y + Rect.Height / 2)), 1), SpriteEffects.None, 0.000001f);
-        }
+            */
+            }
     }
 }
