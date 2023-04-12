@@ -74,7 +74,7 @@ namespace Ascent.Player_and_Objects
             Charge,
             Launch,
             LaunchLag,
-            Swing
+            Grapple
         }
 
         private playerState state = playerState.Move;
@@ -110,24 +110,23 @@ namespace Ascent.Player_and_Objects
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
         {
-
             bool isGrounded = checkIfGrounded(GameBounds, tiles);
-            
+
             // Check if the player is grappling
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                state = playerState.Swing;
+                state = playerState.Grapple;
             }
             else
             {
                 // player must hold down mouse to swing, and if they let go, reset the grapple point
                 GrapplePoint = new Vector2(-1, -1);
-                if (state == playerState.Swing)
+                if (state == playerState.Grapple)
                 {
                     state = playerState.Move;
                 }
             }
-            
+
             string animationToPlay = "Idle";
 
             // check player's current state
@@ -183,40 +182,31 @@ namespace Ascent.Player_and_Objects
                     animationToPlay = "Crouch";
                 }
             }
-            else if (state == playerState.Swing)
+            else if (state == playerState.Grapple)
             {
                 // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
                 if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
                 {
                     GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
                 }
-                
+
                 // add gravity to the player
                 velocity.Y += gravity;
 
                 // Calculate the line between the player and the grapple point
                 Vector2 grappleLine = GrapplePoint - Position;
+
+                // Calculate the distance between the player and the grapple point
                 float grappleDistance = grappleLine.Length();
-                grappleLine.Normalize();
 
-                // Set grappleHookLength if the player just fired their grapple hook
-                grappleHookLength = (grappleHookLength == 0) ? grappleDistance : grappleHookLength;
-
-                // Calculate the player's velocity tangential to the circle around the grapple point
+                // Calculate the tangential vector of the grapple line
                 Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
                 grappleTangent.Normalize();
+                // project current velocity onto grappleTangent
                 Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
 
-                // Change projected velocity to desired magnitude (this step might not be necessary)
-                float desiredMagnitude = 15f;
-                projectedVelocity = (desiredMagnitude / projectedVelocity.Length()) * projectedVelocity;
 
-                // Calculate the centripetal force needed to keep the player in uniform circular motion
-                Vector2 centripetalForce = grappleLine * (projectedVelocity.LengthSquared() / grappleHookLength);
-
-                // Apply the centripetal force
-                velocity = projectedVelocity + centripetalForce;
-
+                velocity = projectedVelocity;
             }
             else if (state == playerState.Charge)
             {
@@ -473,7 +463,7 @@ namespace Ascent.Player_and_Objects
         public void Draw(SpriteBatch _spriteBatch)
         {
             _animationManager.Draw(_spriteBatch);
-            if (state == playerState.Swing)
+            if (state == playerState.Grapple)
             {
                 DrawLine(_spriteBatch, Position, GrapplePoint, Color.White, 3);
             }
