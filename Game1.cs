@@ -13,7 +13,7 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Point GameBounds = new Point(960, 1280);    // window resolution
+        private Point GameBounds = new Point(1920, 1080);    // window resolution
 
         private Player player1;
         private TileManager tiles;
