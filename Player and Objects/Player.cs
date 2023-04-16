@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ascent.Environment;
 using System.Reflection.Metadata;
+using System.Diagnostics;
 
 namespace Ascent.Player_and_Objects
 {
@@ -352,6 +353,15 @@ namespace Ascent.Player_and_Objects
             return false;
         }
 
+        private bool checkBoundsWithSpikes(Rectangle CollisionRect, TileManager tiles)
+        {
+            if (tiles.IntersectsWithSpikes(CollisionRect))
+            {
+                return true;
+            }
+            return false;
+        }
+
         // check if a collision rectangle is colliding with any boxes. Returns a list of the boxes the player is colliding with.
         private List<Box> checkBoundsWithBox(Rectangle CollisionRect, List<Box> boxes)
         {
@@ -481,6 +491,12 @@ namespace Ascent.Player_and_Objects
             Rectangle MoveFeetRect = new Rectangle(FeetRect.X, Math.Min(FeetRect.Y, FeetRect.Y + (int)velocity.Y), FeetRect.Width, FeetRect.Height + (int)velocity.Y);
 
             boxCollisions = checkBoundsWithBox(MoveYRect, tiles.boxes);
+
+            // spike collision
+            if (checkBoundsWithSpikes(MoveYRect, tiles))
+            {
+                Debug.WriteLine("Spikes!");
+            }
 
             // see if those colliders collide with anything; if they do, stop velocity in that direction. Otherwise, move it there.
             if (checkBounds(MoveYRect, GameBounds, tiles) || (velocity.Y > 0 && checkBoundsWithSemisolids(MoveFeetRect, tiles)))

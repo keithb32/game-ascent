@@ -304,6 +304,29 @@ namespace Ascent.Environment
             }
             return false;
         }
+
+        public bool IntersectsWithSpikes(Rectangle rect)
+        {
+            var spikeLayer = map.Layers.FirstOrDefault(x => x.name == "Spikes");
+            if (spikeLayer == null)
+                return false;
+            for (int y = rect.Top / map.TileHeight; y < spikeLayer.height && y < rect.Bottom / map.TileHeight + 1; y++)
+            {
+                for (int x = rect.Left / map.TileWidth; x < spikeLayer.width && x < rect.Right / map.TileWidth + 1; x++)
+                {
+                    var index = (y * spikeLayer.width) + x;
+                    if (spikeLayer.data[index] != 0)
+                    {
+                        if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight - 1, map.TileWidth, 2)))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+
+        }
         
         // checks if a rectangle intersects with a pickup or the goal; if it intersects with a pickup, collect it; if it intersects with the goal, go to the next level.
         public void DoObjectInteraction(Rectangle rect)
