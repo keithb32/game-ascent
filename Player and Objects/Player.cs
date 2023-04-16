@@ -67,6 +67,9 @@ namespace Ascent.Player_and_Objects
         // current facing direction
         public string facingDirection = "Right";
 
+        private bool grappling = false;
+        private Rope grappleVisual = null;
+
         // current state of the player
         private enum playerState
         {
@@ -74,7 +77,7 @@ namespace Ascent.Player_and_Objects
             Charge,
             Launch,
             LaunchLag,
-            Swing
+            //Swing
         }
 
         private playerState state = playerState.Move;
@@ -116,16 +119,58 @@ namespace Ascent.Player_and_Objects
             // Check if the player is grappling
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                state = playerState.Swing;
+                //state = playerState.Swing;
+                if (!grappling)
+                {
+                    grappling = true;
+                    GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
+                    grappleHookLength = Vector2.Distance(Position, GrapplePoint);
+                    grappleVisual = new Rope(this, GrapplePoint, grappleHookLength, 20, tether);
+                }
+            }
+            else if (gamePadState.IsButtonDown(Buttons.RightTrigger))
+            {
+                // grapple controls for controller users. Note: very scuffed
+                if (!grappling)
+                {
+                    grappling = true;
+                    // you can use the right stick to aim a grapple in any direction
+                    if(Math.Abs(gamePadState.ThumbSticks.Right.X) > 0.1f || Math.Abs(gamePadState.ThumbSticks.Right.Y) > 0.1f)
+                    {
+                        Vector2 temp = new Vector2(gamePadState.ThumbSticks.Right.X, -gamePadState.ThumbSticks.Right.Y);
+                        temp.Normalize();
+                        temp *= 200f;
+                        GrapplePoint = Position + temp;
+                    }
+                    // if the right stick isn't being pressed, you instead aim it at 45 degrees up in the direction you're facing (less clunky, also less flexible)
+                    else if (facingDirection == "Right")
+                    {
+                        GrapplePoint = Position + new Vector2(150f, -150f);
+                    }
+                    else
+                    {
+                        GrapplePoint = Position + new Vector2(-150f, -150f);
+                    }
+                    grappleHookLength = Vector2.Distance(Position, GrapplePoint);
+                    grappleVisual = new Rope(this, GrapplePoint, grappleHookLength, 20, tether);
+                }
             }
             else
             {
                 // player must hold down mouse to swing, and if they let go, reset the grapple point
+                grappling = false;
                 GrapplePoint = new Vector2(-1, -1);
-                if (state == playerState.Swing)
-                {
-                    state = playerState.Move;
-                }
+                //if (state == playerState.Swing)
+                //{
+                //    state = playerState.Move;
+                //}
+            }
+
+            if (!grappling)
+            {
+                GrapplePoint = new Vector2(-1, -1);
+                grappleVisual = null;
+                grappleHookLength = 0;
             }
             
             string animationToPlay = "Idle";
@@ -156,7 +201,7 @@ namespace Ascent.Player_and_Objects
                 }
 
                 // jumping
-                if (keyboardState.IsKeyDown(Keys.W) || gamePadState.IsButtonDown(Buttons.X) || gamePadState.IsButtonDown(Buttons.A))
+                if (keyboardState.IsKeyDown(Keys.W) || gamePadState.IsButtonDown(Buttons.X) || gamePadState.IsButtonDown(Buttons.A) || gamePadState.IsButtonDown(Buttons.RightShoulder) || gamePadState.IsButtonDown(Buttons.LeftShoulder))
                 {
                     if (isGrounded && velocity.Y >= 0)
                     {
@@ -176,48 +221,48 @@ namespace Ascent.Player_and_Objects
                     }
                 }
 
-                if (keyboardState.IsKeyDown(Keys.Space))
+                if (keyboardState.IsKeyDown(Keys.Space) || gamePadState.IsButtonDown(Buttons.LeftTrigger))
                 {
                     chargeAmount = 20f;
                     state = playerState.Charge;
                     animationToPlay = "Crouch";
                 }
             }
-            else if (state == playerState.Swing)
-            {
-                // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
-                if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
-                {
-                    GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
-                }
+            //else if (state == playerState.Swing)
+            //{
+            //    // Check if GrapplePoint is set already, and if it isn't set, update it to the mouse position
+            //    //if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
+            //    //{
+            //    //    GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
+            //    //}
                 
-                // add gravity to the player
-                velocity.Y += gravity;
+            //    // add gravity to the player
+            //    //velocity.Y += gravity;
 
-                // Calculate the line between the player and the grapple point
-                Vector2 grappleLine = GrapplePoint - Position;
-                float grappleDistance = grappleLine.Length();
-                grappleLine.Normalize();
+            //    // Calculate the line between the player and the grapple point
+            //    Vector2 grappleLine = GrapplePoint - Position;
+            //    float grappleDistance = grappleLine.Length();
+            //    grappleLine.Normalize();
 
-                // Set grappleHookLength if the player just fired their grapple hook
-                grappleHookLength = (grappleHookLength == 0) ? grappleDistance : grappleHookLength;
+            //    // Set grappleHookLength if the player just fired their grapple hook
+            //    grappleHookLength = (grappleHookLength == 0) ? grappleDistance : grappleHookLength;
 
-                // Calculate the player's velocity tangential to the circle around the grapple point
-                Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
-                grappleTangent.Normalize();
-                Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
+            //    // Calculate the player's velocity tangential to the circle around the grapple point
+            //    Vector2 grappleTangent = new Vector2(-grappleLine.Y, grappleLine.X);
+            //    grappleTangent.Normalize();
+            //    Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
 
-                // Change projected velocity to desired magnitude (this step might not be necessary)
-                float desiredMagnitude = 15f;
-                projectedVelocity = (desiredMagnitude / projectedVelocity.Length()) * projectedVelocity;
+            //    // Change projected velocity to desired magnitude (this step might not be necessary)
+            //    float desiredMagnitude = 15f;
+            //    projectedVelocity = (desiredMagnitude / projectedVelocity.Length()) * projectedVelocity;
 
-                // Calculate the centripetal force needed to keep the player in uniform circular motion
-                Vector2 centripetalForce = grappleLine * (projectedVelocity.LengthSquared() / grappleHookLength);
+            //    // Calculate the centripetal force needed to keep the player in uniform circular motion
+            //    Vector2 centripetalForce = grappleLine * (projectedVelocity.LengthSquared() / grappleHookLength);
 
-                // Apply the centripetal force
-                velocity = projectedVelocity + centripetalForce;
+            //    // Apply the centripetal force
+            //    //velocity = projectedVelocity + centripetalForce;
 
-            }
+            //}
             else if (state == playerState.Charge)
             {
                 //player is charging the dash (holding down space)
@@ -235,7 +280,7 @@ namespace Ascent.Player_and_Objects
                 }
 
 
-                if (keyboardState.IsKeyDown(Keys.Space))
+                if (keyboardState.IsKeyDown(Keys.Space) || gamePadState.IsButtonDown(Buttons.LeftTrigger))
                 {
                     if (chargeAmount < chargeMax)
                     {
@@ -336,11 +381,33 @@ namespace Ascent.Player_and_Objects
         // if that movement would cause them to collide with something, don't move and reset velocity instead.
         private void HandlePhysics(Point GameBounds, TileManager tiles)
         {
-            // apply some damping forces (horizontal drag and gravity)
+            velocity.Y += gravity;
 
-            if (GrapplePoint.X == -1 && GrapplePoint.Y == -1)
+            // apply some damping forces (horizontal drag and gravity)
+            if (grappling)
             {
-                velocity.Y += gravity;
+                //check and see if the player's movement as a result of their velocity change would cause them to exceed the grapple length; if it would, pull them back towards the grapple point
+                // (by pull them back, I mean change their velocity vector to point to a point within the radius of the grapple)
+                if (grappleHookLength > 0)
+                {
+                    Vector2 newPoint = Position + velocity;
+                    float newDistToGrapple = Vector2.Distance(newPoint, GrapplePoint);
+                    if (newDistToGrapple > grappleHookLength)
+                    {
+                        Vector2 newDistanceOfGrapple = GrapplePoint - (Position + velocity);
+                        Vector2 newDirectionOfGrapple = GrapplePoint - (Position + velocity);
+                        newDirectionOfGrapple.Normalize();
+
+                        velocity += newDistanceOfGrapple - new Vector2(newDirectionOfGrapple.X * grappleHookLength, newDirectionOfGrapple.Y * grappleHookLength);
+                    }
+                    if (checkIfGrounded(GameBounds, tiles))
+                    {
+                        velocity.X *= 0.95f;
+                    }
+                }
+            }
+            else
+            {
                 // if grounded, apply x damping factor of 0.9. otherwise, apply x damping factor of 0.95.
                 if (checkIfGrounded(GameBounds, tiles))
                 {
@@ -348,9 +415,12 @@ namespace Ascent.Player_and_Objects
                 }
                 else
                 {
-                    velocity.X *= 0.99f;
+                    velocity.X *= 0.95f;
                 }
             }
+
+            
+            
 
             // first try to move it in the x direction
 
@@ -472,11 +542,13 @@ namespace Ascent.Player_and_Objects
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _animationManager.Draw(_spriteBatch);
-            if (state == playerState.Swing)
+            if (grappling && grappleVisual != null)
             {
-                DrawLine(_spriteBatch, Position, GrapplePoint, Color.White, 3);
+                grappleVisual.Draw(_spriteBatch);
+                //DrawLine(_spriteBatch, Position, GrapplePoint, Color.White, 3);
             }
+            _animationManager.Draw(_spriteBatch);
+            
 
             if (DebugMode)
             {
@@ -495,6 +567,11 @@ namespace Ascent.Player_and_Objects
                 // feet rectangle
                 _spriteBatch.Draw(Texture, new Vector2(FeetRect.X, FeetRect.Y), FeetRect, Color.Green * 1.0f, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 0.000001f);
             }
+        }
+
+        public Vector2 GetCenter()
+        {
+            return new Vector2(Rect.Center.X,Rect.Center.Y);
         }
     }
 }
