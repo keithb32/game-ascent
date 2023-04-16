@@ -7,6 +7,7 @@
     <File>D:/CS4730/team-project/game-ascent/Content/Backgrounds/background_0.png</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Backgrounds/background_1.png</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Backgrounds/background_2.png</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Environment/obstacle_tiles.png</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Environment/tileset.png</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Objects/crate.png</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Pickups/cherry.png</File>
@@ -19,6 +20,7 @@
     <File>D:/CS4730/team-project/game-ascent/Content/Player/tether.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

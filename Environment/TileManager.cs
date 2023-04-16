@@ -30,6 +30,7 @@ namespace Ascent.Environment
         private TiledMap map;
         private Dictionary<int, TiledTileset> tilesets;
         private Texture2D tilesetTexture;
+        private Texture2D obstacleTexture;
 
         private List<Pickup> cherries;
         public List<Box> boxes;
@@ -64,6 +65,7 @@ namespace Ascent.Environment
             LoadLevel(1);
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");
             tilesetTexture = Content.Load<Texture2D>("Environment\\tileset");
+            obstacleTexture = Content.Load<Texture2D>("Environment\\obstacle_tiles");
         }
 
         // Load a level of a given number (assumes level tiled files will be in the Environment folder, and named LevelX , where X is the level number)
@@ -170,7 +172,7 @@ namespace Ascent.Environment
                             continue;
                         }
 
-                        // Helper method to fetch the right TieldMapTileset instance
+                        // Helper method to fetch the right TiledMapTileset instance
                         // This is a connection object Tiled uses for linking the correct tileset to the 
                         // gid value using the firstgid property
                         var mapTileset = map.GetTiledMapTileset(gid);
@@ -226,8 +228,16 @@ namespace Ascent.Environment
                         }
 
                         // Render sprite at position tileX, tileY using the rect
-                        _spriteBatch.Draw(tilesetTexture, destination, source, Color.White,
-                            (float)rotation, Vector2.Zero, effects, 0);
+                        if (layer.name == "Spikes")
+                        {
+                            _spriteBatch.Draw(obstacleTexture, destination, source, Color.White,
+                                (float)rotation, Vector2.Zero, effects, 0);
+                        }
+                        else
+                        {
+                            _spriteBatch.Draw(tilesetTexture, destination, source, Color.White,
+                                (float)rotation, Vector2.Zero, effects, 0);
+                        }
                     }
                 }
             }
