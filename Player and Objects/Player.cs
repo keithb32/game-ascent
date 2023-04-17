@@ -118,12 +118,12 @@ namespace Ascent.Player_and_Objects
             {
                 state = playerState.Swing;
             }
-            else
-            {
+            else{
                 // player must hold down mouse to swing, and if they let go, reset the grapple point
                 GrapplePoint = new Vector2(-1, -1);
                 if (state == playerState.Swing)
                 {
+                    velocity *= 1.75f;
                     state = playerState.Move;
                 }
             }
@@ -208,7 +208,10 @@ namespace Ascent.Player_and_Objects
                 Vector2 projectedVelocity = Vector2.Dot(velocity, grappleTangent) * grappleTangent;
 
                 // Change projected velocity to desired magnitude (this step might not be necessary)
-                float desiredMagnitude = 15f;
+                float adjacent = Position.X - GrapplePoint.X;
+                float opposite = Position.Y - GrapplePoint.Y;
+                float angle = MathF.Atan2(opposite, adjacent);
+                float desiredMagnitude = (float)(15f + 5*Math.Sin(angle));
                 projectedVelocity = (desiredMagnitude / projectedVelocity.Length()) * projectedVelocity;
 
                 // Calculate the centripetal force needed to keep the player in uniform circular motion
@@ -216,7 +219,6 @@ namespace Ascent.Player_and_Objects
 
                 // Apply the centripetal force
                 velocity = projectedVelocity + centripetalForce;
-
             }
             else if (state == playerState.Charge)
             {
