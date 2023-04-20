@@ -81,6 +81,8 @@ namespace Ascent.Player_and_Objects
             //Swing
         }
 
+        public bool isDead; // not a private state so that level manager can read it
+
         private playerState state = playerState.Move;
 
         private Texture2D tether;
@@ -110,6 +112,7 @@ namespace Ascent.Player_and_Objects
             Position = new Vector2(20, 20);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
+            isDead = false;
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
@@ -495,7 +498,7 @@ namespace Ascent.Player_and_Objects
             // spike collision
             if (checkBoundsWithSpikes(MoveYRect, tiles))
             {
-                Debug.WriteLine("Spikes!");
+                isDead = true;
             }
 
             // see if those colliders collide with anything; if they do, stop velocity in that direction. Otherwise, move it there.

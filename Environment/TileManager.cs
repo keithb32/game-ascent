@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TiledCS;
+using System.Diagnostics;
 
 namespace Ascent.Environment
 {
@@ -317,6 +318,7 @@ namespace Ascent.Environment
                     var index = (y * spikeLayer.width) + x;
                     if (spikeLayer.data[index] != 0)
                     {
+                        // if spike collision is wonky, adj here probably
                         if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight - 1, map.TileWidth, 2)))
                         {
                             return true;
