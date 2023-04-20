@@ -99,11 +99,7 @@ namespace Ascent.Environment
             {
                 goal = null;
             }
-            
-
-
-
-
+          
             // set up the pickups (cherries)
             cherries = new List<Pickup>();
 

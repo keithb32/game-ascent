@@ -81,6 +81,11 @@ namespace Ascent
                 Exit();
 
             // TODO: Add your update logic here
+            if (player1.isDead)
+            {
+                tiles.LoadLevel(1);
+                player1 = new Player(Content);
+            }
             
             HandleInput(gameTime);
 
