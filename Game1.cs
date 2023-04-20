@@ -18,6 +18,8 @@ namespace Ascent
         private Player player1;
         private TileManager tiles;
 
+        private int currentLevel;
+
         private Sprite background0;
         private Sprite background1;
         private Sprite background2;
@@ -45,6 +47,7 @@ namespace Ascent
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            currentLevel = 1; // remove when level select menu added.
         }
 
         protected override void LoadContent()
@@ -83,7 +86,7 @@ namespace Ascent
             // TODO: Add your update logic here
             if (player1.isDead)
             {
-                tiles.LoadLevel(1);
+                tiles.LoadLevel(currentLevel);
                 player1 = new Player(Content);
             }
             
