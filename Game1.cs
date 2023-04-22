@@ -18,7 +18,9 @@ namespace Ascent
         private Player player1;
         private TileManager tiles;
 
-        private int currentLevel;
+        private LevelMenu menu;
+        private int currentLevel = 0;
+        public int nextLevel { get; set; } = 0;
 
         private Sprite background0;
         private Sprite background1;
@@ -40,21 +42,18 @@ namespace Ascent
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            tiles = new TileManager(Content, this);
+            menu = new LevelMenu(this, GraphicsDevice, Content);   
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
-            currentLevel = 1; // remove when level select menu added.
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            tiles = new TileManager(Content, this);
 
             player1 = new Player(Content);
             player1.LoadContent(_graphics);
@@ -75,7 +74,6 @@ namespace Ascent
             };
             background2 = new Sprite(background2Animation, 0, 610, 3.45f, 3.45f);
 
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -83,18 +81,28 @@ namespace Ascent
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
             if (player1.isDead)
             {
-                tiles.LoadLevel(currentLevel);
                 player1 = new Player(Content);
             }
-            
+
+            if (nextLevel != currentLevel)
+            {
+                currentLevel = nextLevel;
+                tiles.LoadLevel(currentLevel);
+            }
+
             HandleInput(gameTime);
 
-            player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
-            tiles.Update(gameTime, GameBounds, player1);
-
+            if (currentLevel == 0)
+            {
+                menu.Update(gameTime, mouseState);
+            }
+            else
+            {
+                player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
+                tiles.Update(gameTime, GameBounds, player1);
+            }
 
             base.Update(gameTime);
         }
@@ -114,15 +122,21 @@ namespace Ascent
         {
             GraphicsDevice.Clear(color);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-            background0.Draw(_spriteBatch);
-            background1.Draw(_spriteBatch);
-            background2.Draw(_spriteBatch);
+            if (currentLevel == 0)
+            {
+                menu.Draw(_spriteBatch);
+            }
+            else
+            {
+                background0.Draw(_spriteBatch);
+                background1.Draw(_spriteBatch);
+                background2.Draw(_spriteBatch);
 
-            tiles.Draw(_spriteBatch);
-            player1.Draw(_spriteBatch);
+                tiles.Draw(_spriteBatch);
+                player1.Draw(_spriteBatch);
+            }
 
             _spriteBatch.End();
 

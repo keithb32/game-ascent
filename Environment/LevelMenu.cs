@@ -1,0 +1,84 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
+using Ascent.Environment;
+using TiledCS;
+
+namespace Ascent.Environment
+{
+    internal class LevelMenu
+    {
+        private Game1 _game;
+        private GraphicsDevice _graphicsDevice;
+        private ContentManager _content;
+
+        private Texture2D banner;
+        private SpriteFont font;
+        private List<MenuItem> menuItems;
+        private int selectedMenuItemIndex;
+
+        public LevelMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
+        {
+            _game = game;
+            _graphicsDevice = graphicsDevice;
+            _content = content;
+            banner = content.Load<Texture2D>("Menu/menuBanner");
+            font = _content.Load<SpriteFont>("Fonts/MenuFont");
+
+            menuItems = new List<MenuItem>
+            {
+            new MenuItem("Level 1", new Vector2(1920/2-75, 400), () => StartLevel(1)),
+            new MenuItem("Level 2", new Vector2(1920/2-75, 450), () => StartLevel(2)),
+            new MenuItem("Exit", new Vector2(1920/2-75, 500), () => _game.Exit())
+            };
+            selectedMenuItemIndex = 0;
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            // Clear the screen
+            _graphicsDevice.Clear(Color.Black);
+
+            // TODO: Position this according to final window resolution
+            spriteBatch.Draw(banner, new Rectangle(1920/2 - 250, 100, 500, 150), Color.White);
+
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                Color color = (i == selectedMenuItemIndex) ? Color.White : Color.Gray;
+                spriteBatch.DrawString(font, menuItems[i].text, menuItems[i].position, color);
+            }
+        }
+
+
+        public void Update(GameTime gameTime, MouseState mouseState){
+            Point mousePosition = mouseState.Position;
+
+            // Loop over menu items to see which item is selected
+            // and invoke the menu item if the user clicks it
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                if (menuItems[i].bounds.Contains(mousePosition))
+                {
+                    if (mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        menuItems[selectedMenuItemIndex].action.Invoke();
+                    }
+                    else
+                    {
+                        selectedMenuItemIndex = i;
+                    }
+                }
+            }
+        }
+
+
+        private void StartLevel(int levelNumber)
+        {
+            _game.nextLevel = levelNumber;
+        }
+
+    }
+}
