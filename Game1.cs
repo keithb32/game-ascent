@@ -19,7 +19,8 @@ namespace Ascent
         private TileManager tiles;
 
         private LevelMenu menu;
-        private int currentLevel = 0;
+        private LevelEndMenu endMenu;
+        public int currentLevel = 0;
         public int nextLevel { get; set; } = 0;
 
         private Sprite background0;
@@ -43,7 +44,8 @@ namespace Ascent
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             tiles = new TileManager(Content, this);
-            menu = new LevelMenu(this, GraphicsDevice, Content);   
+            menu = new LevelMenu(this, GraphicsDevice, Content);
+            endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
         }
 
         protected override void Initialize()
@@ -127,6 +129,10 @@ namespace Ascent
             if (currentLevel == 0)
             {
                 menu.Draw(_spriteBatch);
+            }
+            else if (tiles.goalReached)
+            {
+                endMenu.Draw(_spriteBatch);
             }
             else
             {

@@ -36,6 +36,7 @@ namespace Ascent.Environment
         private List<Pickup> cherries;
         public List<Box> boxes;
         private Pickup goal;
+        public bool goalReached;
 
         private int level = 1;
         private int maxLevel = 2;
@@ -82,6 +83,8 @@ namespace Ascent.Environment
             map = new TiledMap(con.RootDirectory + "\\Environment\\Level" + level + ".tmx");
             map.TileHeight = 2 * map.TileHeight;
             map.TileWidth = 2 * map.TileWidth;
+
+            goalReached = false;
 
 
             // set up the goal (gem)
@@ -341,8 +344,9 @@ namespace Ascent.Environment
 
             if (goal != null && goal.hitbox.Intersects(rect))
             {
-                level++;
-                LoadLevel(level);
+                goalReached = true;
+                //level++;
+                //LoadLevel(level);
             }
         }
     }
