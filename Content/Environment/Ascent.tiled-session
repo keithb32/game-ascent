@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Level1.tmx",
+    "activeFile": "Level2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -41,14 +41,14 @@
     "map.width": 60,
     "openFiles": [
         "Level1.tmx",
-        "Springstar Fields.tsx",
-        "Obstacles.tsx"
+        "Level2.tmx"
     ],
     "project": "Ascent.tiled-project",
     "recentFiles": [
+        "Level1.tmx",
+        "Level2.tmx",
         "Obstacles.tsx",
-        "Springstar Fields.tsx",
-        "Level1.tmx"
+        "Springstar Fields.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
