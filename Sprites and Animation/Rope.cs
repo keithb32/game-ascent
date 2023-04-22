@@ -15,7 +15,11 @@ namespace Ascent.Sprites_and_Animation
     // The tutorial is for Unity but it translates pretty easily into Monogame (yay C#)
     // Anyways what this class does is it simulates/draws rope physics, which is used to animate the tether for the grapple
     // the advantage of this class over a simple line is that this lets the rope have a bit of slack when the player isn't at the max distance
+<<<<<<< HEAD
     // If you're reading this and wondering what a RopeSegment is, it's a helper struct at the bottom
+=======
+    // If you're wondering what a RopeSegment is, it's a helper struct at the bottom
+>>>>>>> f4ec9995d70f853437082b2b559a919dc41014da
     internal class Rope
     {
         List<RopeSegment> ropeSegments;
