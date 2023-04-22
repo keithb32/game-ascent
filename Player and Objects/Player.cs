@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ascent.Environment;
 using System.Reflection.Metadata;
+using System.Diagnostics;
 
 namespace Ascent.Player_and_Objects
 {
@@ -79,6 +80,8 @@ namespace Ascent.Player_and_Objects
             LaunchLag,
         }
 
+        public bool isDead; // not a private state so that level manager can read it
+
         private playerState state = playerState.Move;
 
         private Texture2D tether;
@@ -108,6 +111,7 @@ namespace Ascent.Player_and_Objects
             Position = new Vector2(20, 20);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
+            isDead = false;
         }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
@@ -131,7 +135,6 @@ namespace Ascent.Player_and_Objects
             }
             else if (gamePadState.IsButtonDown(Buttons.RightTrigger))
             {
-                // grapple controls for controller users. Note: very scuffed, also this one isn't restricted to only ground tiles so its kind of busted at the moment
                 if (!grappling)
                 {
                     grappling = true;
@@ -158,7 +161,7 @@ namespace Ascent.Player_and_Objects
             }
             else
             {
-                // if the player isn't grappling with either the mouse or a controller, set the grappling boolean to false
+                // player must hold down mouse to swing, and if they let go, reset the grapple point
                 grappling = false;
             }
 
@@ -314,6 +317,15 @@ namespace Ascent.Player_and_Objects
             return false;
         }
 
+        private bool checkBoundsWithSpikes(Rectangle CollisionRect, TileManager tiles)
+        {
+            if (tiles.IntersectsWithSpikes(CollisionRect))
+            {
+                return true;
+            }
+            return false;
+        }
+
         // check if a collision rectangle is colliding with any boxes. Returns a list of the boxes the player is colliding with.
         private List<Box> checkBoundsWithBox(Rectangle CollisionRect, List<Box> boxes)
         {
@@ -386,6 +398,9 @@ namespace Ascent.Player_and_Objects
                 }
             }
 
+            
+            
+
             // first try to move it in the x direction
 
             // define a rectangle that covers the new x position for collider and the old x position for the collider, plus everything that's in between them
@@ -445,6 +460,12 @@ namespace Ascent.Player_and_Objects
             Rectangle MoveFeetRect = new Rectangle(FeetRect.X, Math.Min(FeetRect.Y, FeetRect.Y + (int)velocity.Y), FeetRect.Width, FeetRect.Height + (int)velocity.Y);
 
             boxCollisions = checkBoundsWithBox(MoveYRect, tiles.boxes);
+
+            // spike collision
+            if (checkBoundsWithSpikes(MoveYRect, tiles))
+            {
+                isDead = true;
+            }
 
             // see if those colliders collide with anything; if they do, stop velocity in that direction. Otherwise, move it there.
             if (checkBounds(MoveYRect, GameBounds, tiles) || (velocity.Y > 0 && checkBoundsWithSemisolids(MoveFeetRect, tiles)))

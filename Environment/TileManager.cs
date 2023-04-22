@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TiledCS;
+using System.Diagnostics;
 
 namespace Ascent.Environment
 {
@@ -30,6 +31,7 @@ namespace Ascent.Environment
         private TiledMap map;
         private Dictionary<int, TiledTileset> tilesets;
         private Texture2D tilesetTexture;
+        private Texture2D obstacleTexture;
 
         private List<Pickup> cherries;
         public List<Box> boxes;
@@ -64,6 +66,7 @@ namespace Ascent.Environment
             LoadLevel(1);
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");
             tilesetTexture = Content.Load<Texture2D>("Environment\\tileset");
+            obstacleTexture = Content.Load<Texture2D>("Environment\\obstacle_tiles");
         }
 
         // Load a level of a given number (assumes level tiled files will be in the Environment folder, and named LevelX , where X is the level number)
@@ -96,11 +99,7 @@ namespace Ascent.Environment
             {
                 goal = null;
             }
-            
-
-
-
-
+          
             // set up the pickups (cherries)
             cherries = new List<Pickup>();
 
@@ -170,7 +169,7 @@ namespace Ascent.Environment
                             continue;
                         }
 
-                        // Helper method to fetch the right TieldMapTileset instance
+                        // Helper method to fetch the right TiledMapTileset instance
                         // This is a connection object Tiled uses for linking the correct tileset to the 
                         // gid value using the firstgid property
                         var mapTileset = map.GetTiledMapTileset(gid);
@@ -226,8 +225,16 @@ namespace Ascent.Environment
                         }
 
                         // Render sprite at position tileX, tileY using the rect
-                        _spriteBatch.Draw(tilesetTexture, destination, source, Color.White,
-                            (float)rotation, Vector2.Zero, effects, 0);
+                        if (layer.name == "Spikes")
+                        {
+                            _spriteBatch.Draw(obstacleTexture, destination, source, Color.White,
+                                (float)rotation, Vector2.Zero, effects, 0);
+                        }
+                        else
+                        {
+                            _spriteBatch.Draw(tilesetTexture, destination, source, Color.White,
+                                (float)rotation, Vector2.Zero, effects, 0);
+                        }
                     }
                 }
             }
@@ -293,6 +300,30 @@ namespace Ascent.Environment
                 }
             }
             return false;
+        }
+
+        public bool IntersectsWithSpikes(Rectangle rect)
+        {
+            var spikeLayer = map.Layers.FirstOrDefault(x => x.name == "Spikes");
+            if (spikeLayer == null)
+                return false;
+            for (int y = rect.Top / map.TileHeight; y < spikeLayer.height && y < rect.Bottom / map.TileHeight + 1; y++)
+            {
+                for (int x = rect.Left / map.TileWidth; x < spikeLayer.width && x < rect.Right / map.TileWidth + 1; x++)
+                {
+                    var index = (y * spikeLayer.width) + x;
+                    if (spikeLayer.data[index] != 0)
+                    {
+                        // if spike collision is wonky, adj here probably
+                        if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight - 1, map.TileWidth, 2)))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+
         }
         
         // checks if a rectangle intersects with a pickup or the goal; if it intersects with a pickup, collect it; if it intersects with the goal, go to the next level.
