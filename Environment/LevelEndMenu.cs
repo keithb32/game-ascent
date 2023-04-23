@@ -18,6 +18,7 @@ namespace Ascent.Environment
         private SpriteFont font;
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
+        private float goldTime, silverTime, bronzeTime;
 
         public float startTime;
         public float time;
@@ -32,7 +33,7 @@ namespace Ascent.Environment
 
             menuItems = new List<MenuItem>
             {
-                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 400), () => NextLevel(game.currentLevel)),
+                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 400), () => { }),
                 new MenuItem("Next Level", new Vector2(1920/2-75, 600), () => NextLevel(game.currentLevel))
             };
             selectedMenuItemIndex = 0;
@@ -75,6 +76,14 @@ namespace Ascent.Environment
                     }
                 }
             }
+        }
+
+        public void setSplits(float[,] splits, int currentLevel)
+        {
+            goldTime = splits[currentLevel, 0];
+            silverTime = splits[currentLevel, 1];
+            bronzeTime = splits[currentLevel, 2];
+            Debug.WriteLine($"Gold split: {goldTime}");
         }
 
         public void CallTime(float endTime)

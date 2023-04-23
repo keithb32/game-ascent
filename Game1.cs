@@ -22,6 +22,7 @@ namespace Ascent
         private LevelMenu menu;
         private LevelEndMenu endMenu;
         public int currentLevel = 0;
+        private float[,] medalSplits; // in ms
         public int nextLevel { get; set; } = 0;
 
         private Sprite background0;
@@ -52,6 +53,11 @@ namespace Ascent
         protected override void Initialize()
         {
             base.Initialize();
+
+            medalSplits = new float[,] { 
+                { 3000, 5000, 10000 }, // Level 1
+                { 3111, 5111, 11111 }, // Level 2
+            };
         }
 
         protected override void LoadContent()
@@ -87,12 +93,12 @@ namespace Ascent
             if (endMenu.startTime < 0.0f)
             {
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-                Debug.WriteLine($"START TIME IS {endMenu.startTime}");
             }
 
             if (player1.isDead)
             {
                 player1 = new Player(Content);
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             }
 
             // if level number was changed, update it
@@ -100,6 +106,9 @@ namespace Ascent
             if (nextLevel != currentLevel)
             {
                 currentLevel = nextLevel;
+                endMenu.time = -1.0f;
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                endMenu.setSplits(medalSplits, currentLevel - 1);
                 tiles.LoadLevel(currentLevel);
             }
 
