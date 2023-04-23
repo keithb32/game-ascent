@@ -9,11 +9,11 @@
     ],
     "fileStates": {
         "Level1.tmx": {
-            "scale": 1,
+            "scale": 3,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 479.5,
-                "y": 319.5
+                "x": 278,
+                "y": 379.3333333333333
             }
         },
         "Level2.tmx": {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace Ascent.Environment
 {
@@ -48,9 +50,31 @@ namespace Ascent.Environment
             }
         }
 
+        public void Update(MouseState mouseState)
+        {
+            Point mousePosition = mouseState.Position;
+
+            // Loop over menu items to see which item is selected
+            // and invoke the menu item if the user clicks it
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                if (menuItems[i].bounds.Contains(mousePosition))
+                {
+                    if (mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        menuItems[selectedMenuItemIndex].action.Invoke();
+                    }
+                    else
+                    {
+                        selectedMenuItemIndex = i;
+                    }
+                }
+            }
+        }
+
         private void NextLevel(int levelNumber)
         {
-            _game.nextLevel = levelNumber;
+            _game.nextLevel = levelNumber + 1;
         }
     }
 }

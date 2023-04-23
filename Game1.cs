@@ -100,6 +100,10 @@ namespace Ascent
             {
                 menu.Update(gameTime, mouseState);
             }
+            else if (tiles.goalReached)
+            {
+                endMenu.Update(mouseState);
+            }
             else
             {
                 player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
