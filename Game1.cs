@@ -18,9 +18,13 @@ namespace Ascent
         private Player player1;
         private TileManager tiles;
 
-        private LevelMenu menu;
+        private LevelMenu levelMenu;
         private int currentLevel = 0;
         public int nextLevel { get; set; } = 0;
+
+        private PauseMenu pauseMenu;
+        public bool isPaused { get; set; } = false;
+        public bool isTransitioning { get; set; } = false;
 
         private Sprite background0;
         private Sprite background1;
@@ -43,7 +47,8 @@ namespace Ascent
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             tiles = new TileManager(Content, this);
-            menu = new LevelMenu(this, GraphicsDevice, Content);   
+            levelMenu = new LevelMenu(this, GraphicsDevice, Content);
+            pauseMenu = new PauseMenu(this, GraphicsDevice, Content); 
         }
 
         protected override void Initialize()
@@ -54,7 +59,6 @@ namespace Ascent
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             player1 = new Player(Content);
             player1.LoadContent(_graphics);
 
@@ -78,25 +82,39 @@ namespace Ascent
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
+
+            // Pause game if player presses escape while not on main menu
+            if (currentLevel > 0 && Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                isPaused = true;
+            }
+
+            // Draw new tile layout if level has changed and we're not going to the main menu
+            if (nextLevel != currentLevel)
+            {
+                currentLevel = nextLevel;
+                if (currentLevel > 0)
+                {
+                    tiles.LoadLevel(nextLevel);
+                }
+            }
 
             if (player1.isDead)
             {
                 player1 = new Player(Content);
             }
 
-            if (nextLevel != currentLevel)
-            {
-                currentLevel = nextLevel;
-                tiles.LoadLevel(currentLevel);
-            }
-
             HandleInput(gameTime);
 
-            if (currentLevel == 0)
+            if (isPaused)
             {
-                menu.Update(gameTime, mouseState);
+                pauseMenu.Update(gameTime, mouseState);
+            }
+            else if (currentLevel == 0)
+            {
+                levelMenu.Update(gameTime, mouseState);
             }
             else
             {
@@ -121,12 +139,15 @@ namespace Ascent
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(color);
-
+            
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
-            if (currentLevel == 0)
+            if (isPaused)
             {
-                menu.Draw(_spriteBatch);
+                pauseMenu.Draw(_spriteBatch);
+            }
+            else if (currentLevel == 0)
+            {
+                levelMenu.Draw(_spriteBatch);
             }
             else
             {

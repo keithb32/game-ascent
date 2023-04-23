@@ -7,6 +7,7 @@
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_0.png</File>
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_1.png</File>
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_2.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/blackBackground.png</File>
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Environment/obstacle_tiles.png</File>
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Environment/tileset.png</File>
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Fonts/MenuFont.spritefont</File>
@@ -22,6 +23,7 @@
     <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/tether.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
