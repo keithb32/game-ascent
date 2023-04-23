@@ -25,6 +25,10 @@ namespace Ascent
         private float[,] medalSplits; // in ms
         public int nextLevel { get; set; } = 0;
 
+        private PauseMenu pauseMenu;
+        public bool isPaused { get; set; } = false;
+        public bool isTransitioning { get; set; } = false;
+
         private Sprite background0;
         private Sprite background1;
         private Sprite background2;
@@ -48,6 +52,7 @@ namespace Ascent
             tiles = new TileManager(Content, this);
             menu = new LevelMenu(this, GraphicsDevice, Content);
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
+            pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
         }
 
         protected override void Initialize()
@@ -63,7 +68,6 @@ namespace Ascent
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             player1 = new Player(Content);
             player1.LoadContent(_graphics);
 
@@ -87,7 +91,7 @@ namespace Ascent
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
             if (endMenu.startTime < 0.0f)
@@ -100,9 +104,13 @@ namespace Ascent
                 player1 = new Player(Content);
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             }
+            // Pause game if player presses escape while not on main menu
+            if (currentLevel > 0 && Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                isPaused = true;
+            }
 
-            // if level number was changed, update it
-            // ideally would not write like this but /shrug
+            // Draw new tile layout if level has changed and we're not going to the main menu
             if (nextLevel != currentLevel)
             {
                 currentLevel = nextLevel;
@@ -114,7 +122,11 @@ namespace Ascent
 
             HandleInput(gameTime);
 
-            if (currentLevel == 0)
+            if (isPaused)
+            {
+                pauseMenu.Update(gameTime, mouseState);
+            }
+            else if (currentLevel == 0)
             {
                 menu.Update(gameTime, mouseState);
             }
@@ -149,10 +161,13 @@ namespace Ascent
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(color);
-
+            
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
-            if (currentLevel == 0)
+            if (isPaused)
+            {
+                pauseMenu.Draw(_spriteBatch);
+            }
+            else if (currentLevel == 0)
             {
                 menu.Draw(_spriteBatch);
             }
