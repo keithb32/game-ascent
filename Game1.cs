@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Ascent
 {
@@ -83,11 +84,19 @@ namespace Ascent
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (endMenu.startTime < 0.0f)
+            {
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                Debug.WriteLine($"START TIME IS {endMenu.startTime}");
+            }
+
             if (player1.isDead)
             {
                 player1 = new Player(Content);
             }
 
+            // if level number was changed, update it
+            // ideally would not write like this but /shrug
             if (nextLevel != currentLevel)
             {
                 currentLevel = nextLevel;
@@ -102,6 +111,10 @@ namespace Ascent
             }
             else if (tiles.goalReached)
             {
+                if (endMenu.time < 0.0f)
+                {
+                    endMenu.CallTime((float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                }
                 endMenu.Update(mouseState);
             }
             else

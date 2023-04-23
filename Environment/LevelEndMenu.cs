@@ -18,7 +18,8 @@ namespace Ascent.Environment
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
 
-        private float time;
+        public float startTime;
+        public float time;
 
         public LevelEndMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -30,9 +31,12 @@ namespace Ascent.Environment
 
             menuItems = new List<MenuItem>
             {
-                new MenuItem("Next Level", new Vector2(1920/2-75, 400), () => NextLevel(game.currentLevel))
+                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 400), () => NextLevel(game.currentLevel)),
+                new MenuItem("Next Level", new Vector2(1920/2-75, 600), () => NextLevel(game.currentLevel))
             };
             selectedMenuItemIndex = 0;
+            startTime = -1.0f;
+            time = -1.0f;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -70,6 +74,12 @@ namespace Ascent.Environment
                     }
                 }
             }
+        }
+
+        public void CallTime(float endTime)
+        {
+            time = endTime - startTime;
+            menuItems[0].text = time.ToString();
         }
 
         private void NextLevel(int levelNumber)
