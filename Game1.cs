@@ -113,7 +113,7 @@ namespace Ascent
             {
                 if (endMenu.time < 0.0f)
                 {
-                    endMenu.CallTime((float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    endMenu.CallTime((float)gameTime.TotalGameTime.TotalMilliseconds);
                 }
                 endMenu.Update(mouseState);
             }

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using System;
 
 namespace Ascent.Environment
 {
@@ -79,7 +80,8 @@ namespace Ascent.Environment
         public void CallTime(float endTime)
         {
             time = endTime - startTime;
-            menuItems[0].text = time.ToString();
+            TimeSpan timeSpan = TimeSpan.FromMilliseconds(time);
+            menuItems[0].text = timeSpan.ToString(@"mm\:ss\:fff");
         }
 
         private void NextLevel(int levelNumber)
