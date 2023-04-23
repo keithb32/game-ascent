@@ -15,6 +15,7 @@ namespace Ascent.Environment
         private ContentManager _content;
 
         private Texture2D banner;
+        private Texture2D gold, silver, bronze;
         private SpriteFont font;
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
@@ -30,10 +31,13 @@ namespace Ascent.Environment
             _content = content;
             banner = content.Load<Texture2D>("Menu/menuBanner");
             font = _content.Load<SpriteFont>("Fonts/MenuFont");
+            gold = content.Load<Texture2D>("Menu/medal_gold");
+            silver = content.Load<Texture2D>("Menu/medal_silver");
+            bronze = content.Load<Texture2D>("Menu/medal_bronze");
 
             menuItems = new List<MenuItem>
             {
-                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 400), () => { }),
+                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 500), () => { }),
                 new MenuItem("Next Level", new Vector2(1920/2-75, 600), () => NextLevel(game.currentLevel))
             };
             selectedMenuItemIndex = 0;
@@ -48,6 +52,18 @@ namespace Ascent.Environment
 
             // TODO: Position this according to final window resolution
             spriteBatch.Draw(banner, new Rectangle(1920 / 2 - 250, 100, 500, 150), Color.White);
+            if (time < goldTime)
+            {
+                spriteBatch.Draw(gold, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+            }
+            else if (time < silverTime)
+            {
+                spriteBatch.Draw(silver, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+            }
+            else if (time < bronzeTime)
+            {
+                spriteBatch.Draw(bronze, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+            }
 
             for (int i = 0; i < menuItems.Count; i++)
             {
@@ -83,7 +99,6 @@ namespace Ascent.Environment
             goldTime = splits[currentLevel, 0];
             silverTime = splits[currentLevel, 1];
             bronzeTime = splits[currentLevel, 2];
-            Debug.WriteLine($"Gold split: {goldTime}");
         }
 
         public void CallTime(float endTime)
