@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Ascent
 {
@@ -18,7 +19,15 @@ namespace Ascent
         private Player player1;
         private TileManager tiles;
 
-        private int currentLevel;
+        private LevelMenu menu;
+        private LevelEndMenu endMenu;
+        public int currentLevel = 0;
+        private float[,] medalSplits; // in ms
+        public int nextLevel { get; set; } = 0;
+
+        private PauseMenu pauseMenu;
+        public bool isPaused { get; set; } = false;
+        public bool isTransitioning { get; set; } = false;
 
         private Sprite background0;
         private Sprite background1;
@@ -42,14 +51,20 @@ namespace Ascent
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            tiles = new TileManager(Content, this);
+            menu = new LevelMenu(this, GraphicsDevice, Content);
+            endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
+            pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
-            currentLevel = 1; // remove when level select menu added.
+
+            medalSplits = new float[,] { 
+                { 3000, 5000, 10000 }, // Level 1
+                { 3111, 5111, 11111 }, // Level 2
+            };
         }
 
         protected override void LoadContent()
@@ -77,34 +92,67 @@ namespace Ascent
             };
             background2 = new Sprite(background2Animation, 0, 610, 3.45f, 3.45f);
 
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            // TODO: Add your update logic here
+            if (endMenu.startTime < 0.0f)
+            {
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            }
 
-            // if player is dead or has beaten the level, then respawn them at the player spawn position from the tilemap
             if (player1.isDead)
             {
-                tiles.LoadLevel(tiles.level);
                 player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
-                player1.isDead = false;
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             }
-            if (tiles.newLevel)
+            // Pause game if player presses escape while not on main menu
+            if (currentLevel > 0 && Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
-                tiles.newLevel = false;
+                isPaused = true;
             }
-            
+
+            // Draw new tile layout if level has changed and we're not going to the main menu
+            if (nextLevel != currentLevel)
+            {
+                currentLevel = nextLevel;
+                endMenu.time = -1.0f;
+                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                if(currentLevel != 0)
+                {
+                    endMenu.setSplits(medalSplits, currentLevel - 1);
+                }
+                tiles.LoadLevel(currentLevel);
+                //jimmy addon
+                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
+            }
+
             HandleInput(gameTime);
 
-            player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
-            tiles.Update(gameTime, GameBounds, player1);
-
+            if (isPaused)
+            {
+                pauseMenu.Update(gameTime, mouseState);
+            }
+            else if (currentLevel == 0)
+            {
+                menu.Update(gameTime, mouseState);
+            }
+            else if (tiles.goalReached)
+            {
+                if (endMenu.time < 0.0f)
+                {
+                    endMenu.CallTime((float)gameTime.TotalGameTime.TotalMilliseconds);
+                }
+                endMenu.Update(mouseState);
+            }
+            else
+            {
+                player1.Update(gameTime, keyboardState, mouseState, gamePadState, GameBounds, tiles);
+                tiles.Update(gameTime, GameBounds, player1);
+            }
 
             base.Update(gameTime);
         }
@@ -123,16 +171,29 @@ namespace Ascent
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(color);
-
-            // TODO: Add your drawing code here
+            
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            if (isPaused)
+            {
+                pauseMenu.Draw(_spriteBatch);
+            }
+            else if (currentLevel == 0)
+            {
+                menu.Draw(_spriteBatch);
+            }
+            else if (tiles.goalReached)
+            {
+                endMenu.Draw(_spriteBatch);
+            }
+            else
+            {
+                background0.Draw(_spriteBatch);
+                background1.Draw(_spriteBatch);
+                background2.Draw(_spriteBatch);
 
-            background0.Draw(_spriteBatch);
-            background1.Draw(_spriteBatch);
-            background2.Draw(_spriteBatch);
-
-            tiles.Draw(_spriteBatch);
-            player1.Draw(_spriteBatch);
+                tiles.Draw(_spriteBatch);
+                player1.Draw(_spriteBatch);
+            }
 
             _spriteBatch.End();
 

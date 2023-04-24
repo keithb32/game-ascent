@@ -36,6 +36,7 @@ namespace Ascent.Environment
         private List<Pickup> cherries;
         public List<Box> boxes;
         private Pickup goal;
+        public bool goalReached;
 
         public Vector2 playerSpawn = new Vector2(20, 20);
 
@@ -76,12 +77,16 @@ namespace Ascent.Environment
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");
             tilesetTexture = Content.Load<Texture2D>("Environment\\tileset");
             obstacleTexture = Content.Load<Texture2D>("Environment\\obstacle_tiles");
-            font = Content.Load<SpriteFont>("File");
+            font = Content.Load<SpriteFont>("Fonts\\File");
         }
 
         // Load a level of a given number (assumes level tiled files will be in the Environment folder, and named LevelX , where X is the level number)
         public void LoadLevel(int level)
         {
+            if(level == 0)
+            {
+                return;
+            }
             if (level > maxLevel)
             {
                 game.Quit();
@@ -100,6 +105,8 @@ namespace Ascent.Environment
             map = new TiledMap(con.RootDirectory + "\\Environment\\Level" + level + ".tmx");
             map.TileHeight = (int)(scale * map.TileHeight);
             map.TileWidth = (int)(scale * map.TileWidth);
+
+            goalReached = false;
 
 
             // set up the goal (gem)
@@ -386,7 +393,10 @@ namespace Ascent.Environment
 
             if (goal != null && goal.hitbox.Intersects(rect))
             {
-                LoadLevel(level + 1);
+                //LoadLevel(level + 1);
+                goalReached = true;
+                //level++;
+                //LoadLevel(level);
             }
         }
     }

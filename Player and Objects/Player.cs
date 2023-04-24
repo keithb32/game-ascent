@@ -537,7 +537,7 @@ namespace Ascent.Player_and_Objects
 
         // Note: you can uncomment the following function to debug the player's hitbox (shows both player hitbox and feet hitbox over the sprite)
 
-        public void Draw(SpriteBatch _spriteBatch)
+        public new void Draw(SpriteBatch _spriteBatch)
         {
             if (grappling && grappleVisual != null)
             {

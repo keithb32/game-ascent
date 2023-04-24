@@ -11,6 +11,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\File.spritefont" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
     <None Remove="Content\obj\DesktopGL\net6.0\Content\Pickups\cherry.mgcontent" />
