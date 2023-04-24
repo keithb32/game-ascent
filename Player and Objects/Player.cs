@@ -56,7 +56,7 @@ namespace Ascent.Player_and_Objects
 
         // values used to control charging the dash
         private float chargeAmount = 10f;
-        private float chargeMax = 90f;
+        private float chargeMax = 60f;
 
         // movement parameters
         private float acceleration = 1.2f;
@@ -109,7 +109,7 @@ namespace Ascent.Player_and_Objects
             )
         {
             Rect = new Rectangle(10, 10, (int)(20*scale), (int)(30*scale));
-            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 2, Rect.Width, 2);
+            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 1, Rect.Width, 1);
             Position = new Vector2(xPos, yPos);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
@@ -118,8 +118,8 @@ namespace Ascent.Player_and_Objects
             gravity = scale / 2;
 
             // values used to control charging the dash
-            chargeAmount = 10f * (scale / 2f);
-            chargeMax = 90f * (scale / 2f);
+            chargeAmount = chargeAmount * (scale / 2f);
+            chargeMax = chargeMax * (scale / 2f);
 
             // movement parameters
             acceleration = 1.2f * (scale / 2f);
@@ -274,6 +274,7 @@ namespace Ascent.Player_and_Objects
                 // player is about to launch (just let go of space)
 
                 animationToPlay = "Crouch";
+                Debug.WriteLine("charge: " + chargeAmount);
                 if (facingDirection == "Left")
                 {
                     velocity += new Vector2(-1f, -0.2f) * chargeAmount;
