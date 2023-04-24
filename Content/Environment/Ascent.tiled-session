@@ -3,25 +3,30 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Level2.tmx",
+    "activeFile": "Level1.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "Level1.tmx": {
-            "scale": 1,
-            "selectedLayer": 2,
+            "expandedObjectLayers": [
+                8,
+                7,
+                6
+            ],
+            "scale": 0.125,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 536,
-                "y": 443
+                "x": 1668,
+                "y": 776
             }
         },
         "Level2.tmx": {
-            "scale": 1.1202083333333333,
+            "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.2678073275061,
-                "y": 320.47610191556635
+                "x": 479,
+                "y": 384
             }
         },
         "Obstacles.tsx": {
@@ -29,7 +34,7 @@
             "scaleInEditor": 16
         },
         "Springstar Fields.tsx": {
-            "scaleInDock": 3,
+            "scaleInDock": 2,
             "scaleInEditor": 1
         }
     },
@@ -45,8 +50,8 @@
     ],
     "project": "Ascent.tiled-project",
     "recentFiles": [
-        "Level1.tmx",
         "Level2.tmx",
+        "Level1.tmx",
         "Obstacles.tsx",
         "Springstar Fields.tsx"
     ],

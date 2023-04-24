@@ -13,7 +13,7 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Point GameBounds = new Point(1920, 1080);    // window resolution
+        private Point GameBounds = new Point(1920, 1280);    // window resolution
 
         private Player player1;
         private TileManager tiles;
@@ -25,6 +25,8 @@ namespace Ascent
         private Sprite background2;
 
         private Color color = new Color(46, 90, 137);
+
+        private float scale = 2.0f;
 
 
         // inputs
@@ -54,9 +56,9 @@ namespace Ascent
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            tiles = new TileManager(Content, this);
+            tiles = new TileManager(Content, this, scale);
 
-            player1 = new Player(Content);
+            player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             player1.LoadContent(_graphics);
 
             var background0Animation = new Dictionary<string, Animation>()
@@ -84,10 +86,18 @@ namespace Ascent
                 Exit();
 
             // TODO: Add your update logic here
+
+            // if player is dead or has beaten the level, then respawn them at the player spawn position from the tilemap
             if (player1.isDead)
             {
-                tiles.LoadLevel(currentLevel);
-                player1 = new Player(Content);
+                tiles.LoadLevel(tiles.level);
+                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
+                player1.isDead = false;
+            }
+            if (tiles.newLevel)
+            {
+                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
+                tiles.newLevel = false;
             }
             
             HandleInput(gameTime);

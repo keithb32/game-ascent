@@ -86,7 +86,9 @@ namespace Ascent.Player_and_Objects
 
         private Texture2D tether;
 
-        public Player(ContentManager Content) : base(
+        private float scale = 2.0f;
+
+        public Player(ContentManager Content, int xPos=20, int yPos=20, float scale=2f) : base(
                 new Dictionary<string, Animation>()
                 {
                     {"IdleRight", new Animation(Content.Load<Texture2D>("Player/player-idle"), 4) },
@@ -100,19 +102,29 @@ namespace Ascent.Player_and_Objects
                     {"CrouchRight", new Animation(Content.Load<Texture2D>("Player/player-crouch"), 2) },
                     {"CrouchLeft", new Animation(Content.Load<Texture2D>("Player/player-crouch"), 2, true) }
                 },
-                 -38, 
-                 -50, 
-                 3.45f, 
-                 3.45f
+                 (int)(-19*scale),
+                 (int)(-25 * scale), 
+                 1.725f * scale, 
+                 1.725f*scale
             )
         {
-            Rect = new Rectangle(10, 10, 40, 60);
+            Rect = new Rectangle(10, 10, (int)(20*scale), (int)(30*scale));
             FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 2, Rect.Width, 2);
-            Position = new Vector2(20, 20);
+            Position = new Vector2(xPos, yPos);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
             isDead = false;
-        }
+            this.scale = scale;
+            gravity = scale / 2;
+
+            // values used to control charging the dash
+            chargeAmount = 10f * (scale / 2f);
+            chargeMax = 90f * (scale / 2f);
+
+            // movement parameters
+            acceleration = 1.2f * (scale / 2f);
+            MaxMoveSpeed = 15f * (scale / 2f);
+    }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
         {
@@ -205,7 +217,7 @@ namespace Ascent.Player_and_Objects
                 {
                     if (isGrounded && velocity.Y >= 0)
                     {
-                        velocity.Y = -20f;
+                        velocity.Y = -10f * scale;
                         animationToPlay = "Jump";
                     }
                 }
@@ -249,7 +261,7 @@ namespace Ascent.Player_and_Objects
                 {
                     if (chargeAmount < chargeMax)
                     {
-                        chargeAmount += 1f;
+                        chargeAmount += 0.5f * scale;
                     }
                 }
                 else
