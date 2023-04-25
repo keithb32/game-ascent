@@ -29,9 +29,7 @@ namespace Ascent
         public bool isPaused { get; set; } = false;
         public bool isTransitioning { get; set; } = false;
 
-        private Sprite background0;
-        private Sprite background1;
-        private Sprite background2;
+        List<Sprite> backgroundSprites = new List<Sprite>();
 
         private Color color = new Color(46, 90, 137);
 
@@ -82,17 +80,20 @@ namespace Ascent
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_0"), 1) }
             };
-            background0 = new Sprite(background0Animation, 0, 450, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background0Animation, 0, 300, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background0Animation, 750, 300, 5f, 5f));
             var background1Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_1"), 1) }
             };
-            background1 = new Sprite(background1Animation,0, 550, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background1Animation,0, 350, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background1Animation, 780, 350, 5f, 5f));
             var background2Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_2"), 1) }
             };
-            background2 = new Sprite(background2Animation, 0, 610, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background2Animation, 0, 430, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background2Animation, 800, 430, 5f, 5f));
 
         }
 
@@ -189,9 +190,10 @@ namespace Ascent
             }
             else
             {
-                background0.Draw(_spriteBatch);
-                background1.Draw(_spriteBatch);
-                background2.Draw(_spriteBatch);
+                foreach (Sprite backgroundSprite in backgroundSprites)
+                {
+                    backgroundSprite.Draw(_spriteBatch);
+                }
 
                 tiles.Draw(_spriteBatch);
                 player1.Draw(_spriteBatch);
