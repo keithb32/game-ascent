@@ -109,7 +109,7 @@ namespace Ascent.Player_and_Objects
             )
         {
             Rect = new Rectangle(10, 10, (int)(20*scale), (int)(30*scale));
-            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 1, Rect.Width, 1);
+            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height -2, Rect.Width, 2);
             Position = new Vector2(xPos, yPos);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
@@ -357,6 +357,10 @@ namespace Ascent.Player_and_Objects
         // check if the player is currently grounded.
         private bool checkIfGrounded(Point GameBounds, TileManager tiles)
         {
+            if (checkBoundsWithSemisolids(FeetRect, tiles))
+            {
+                return true;
+            }
             bool ret = false;
             Position += new Vector2(0, 1);
             ret = checkBounds(Rect, GameBounds, tiles) || checkBoundsWithSemisolids(FeetRect, tiles) || checkBoundsWithBox(Rect, tiles.boxes).Count > 0;
@@ -393,7 +397,7 @@ namespace Ascent.Player_and_Objects
                     // If you're grounded, still apply a damping force to simulate firction (air movement while grappling is not damped bc it feels better like that)
                     if (checkIfGrounded(GameBounds, tiles))
                     {
-                        velocity.X *= 0.95f;
+                        velocity.X *= 0.92f;
                     }
                 }
             }
@@ -421,6 +425,10 @@ namespace Ascent.Player_and_Objects
 
             List<Box> boxCollisions = checkBoundsWithBox(MoveXRect, tiles.boxes);
 
+            if (checkBoundsWithSpikes(MoveXRect, tiles))
+            {
+                isDead = true;
+            }
 
             // see if that collider intersects with anything; if it does, stop velocity in that direction. Otherwise, move it there.
             if (checkBounds(MoveXRect, GameBounds, tiles))
@@ -515,7 +523,7 @@ namespace Ascent.Player_and_Objects
             {
                 Position += new Vector2(0, (int)velocity.Y);
             }
-
+            
         }
 
         // helper method for debugging

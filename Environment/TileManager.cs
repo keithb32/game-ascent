@@ -41,7 +41,7 @@ namespace Ascent.Environment
         public Vector2 playerSpawn = new Vector2(20, 20);
 
         public int level = 1;
-        private int maxLevel = 2;
+        private int maxLevel = 3;
 
         public int numCherries = 0;
 
@@ -356,6 +356,7 @@ namespace Ascent.Environment
 
         public bool IntersectsWithSpikes(Rectangle rect)
         {
+            int spikeHitboxSize = map.TileHeight /2;
             var spikeLayer = map.Layers.FirstOrDefault(x => x.name == "Spikes");
             if (spikeLayer == null)
                 return false;
@@ -367,10 +368,42 @@ namespace Ascent.Environment
                     if (spikeLayer.data[index] != 0)
                     {
                         // if spike collision is wonky, adj here probably
-                        if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight - 1, map.TileWidth, 2)))
+                        // we got a spike, we need to see which hitbox to apply
+
+                        //upward facing spike
+                        if (spikeLayer.data[index] == 199)
                         {
-                            return true;
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, (y+1) * map.TileHeight - spikeHitboxSize, map.TileWidth, spikeHitboxSize)))
+                            {
+                                return true;
+                            }
                         }
+                        // downward facing spike
+                        else if (spikeLayer.data[index] == 200)
+                        {
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight, map.TileWidth, spikeHitboxSize)))
+                            {
+                                return true;
+                            }
+                        }
+                        //left facing spike
+                        else if (spikeLayer.data[index] == 202)
+                        {
+                            if (rect.Intersects(new Rectangle((x + 1) * map.TileWidth - spikeHitboxSize, y * map.TileHeight, spikeHitboxSize, map.TileHeight)))
+                            {
+                                return true;
+                            }
+                        }
+                        //right facing spike
+                        else if (spikeLayer.data[index] == 201)
+                        {
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight, spikeHitboxSize, map.TileHeight)))
+                            {
+                                return true;
+                            }
+                        }
+
+
                     }
                 }
             }

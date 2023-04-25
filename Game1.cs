@@ -64,6 +64,8 @@ namespace Ascent
             medalSplits = new float[,] { 
                 { 3000, 5000, 10000 }, // Level 1
                 { 3111, 5111, 11111 }, // Level 2
+                { 3222, 5222, 12222 }, // Level 3
+                { 3111, 5111, 11111 }, // Level 4
             };
         }
 
