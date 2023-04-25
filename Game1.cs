@@ -14,7 +14,7 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Point GameBounds = new Point(1920, 1080);    // window resolution
+        private Point GameBounds = new Point(1920, 1280);    // window resolution
 
         private Player player1;
         private TileManager tiles;
@@ -29,11 +29,11 @@ namespace Ascent
         public bool isPaused { get; set; } = false;
         public bool isTransitioning { get; set; } = false;
 
-        private Sprite background0;
-        private Sprite background1;
-        private Sprite background2;
+        List<Sprite> backgroundSprites = new List<Sprite>();
 
         private Color color = new Color(46, 90, 137);
+
+        private float scale = 2.0f;
 
 
         // inputs
@@ -62,30 +62,38 @@ namespace Ascent
             medalSplits = new float[,] { 
                 { 3000, 5000, 10000 }, // Level 1
                 { 3111, 5111, 11111 }, // Level 2
+                { 3222, 5222, 12222 }, // Level 3
+                { 3111, 5111, 11111 }, // Level 4
             };
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            player1 = new Player(Content);
+
+            tiles = new TileManager(Content, this, scale);
+
+            player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             player1.LoadContent(_graphics);
 
             var background0Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_0"), 1) }
             };
-            background0 = new Sprite(background0Animation, 0, 450, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background0Animation, 0, 300, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background0Animation, 750, 300, 5f, 5f));
             var background1Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_1"), 1) }
             };
-            background1 = new Sprite(background1Animation,0, 550, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background1Animation,0, 350, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background1Animation, 780, 350, 5f, 5f));
             var background2Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_2"), 1) }
             };
-            background2 = new Sprite(background2Animation, 0, 610, 3.45f, 3.45f);
+            backgroundSprites.Add(new Sprite(background2Animation, 0, 430, 5f, 5f));
+            backgroundSprites.Add(new Sprite(background2Animation, 800, 430, 5f, 5f));
 
         }
 
@@ -101,7 +109,7 @@ namespace Ascent
 
             if (player1.isDead)
             {
-                player1 = new Player(Content);
+                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             }
             // Pause game if player presses escape while not on main menu
@@ -116,8 +124,13 @@ namespace Ascent
                 currentLevel = nextLevel;
                 endMenu.time = -1.0f;
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-                endMenu.setSplits(medalSplits, currentLevel - 1);
+                if(currentLevel != 0)
+                {
+                    endMenu.setSplits(medalSplits, currentLevel - 1);
+                }
                 tiles.LoadLevel(currentLevel);
+                //jimmy addon
+                player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             }
 
             HandleInput(gameTime);
@@ -177,9 +190,10 @@ namespace Ascent
             }
             else
             {
-                background0.Draw(_spriteBatch);
-                background1.Draw(_spriteBatch);
-                background2.Draw(_spriteBatch);
+                foreach (Sprite backgroundSprite in backgroundSprites)
+                {
+                    backgroundSprite.Draw(_spriteBatch);
+                }
 
                 tiles.Draw(_spriteBatch);
                 player1.Draw(_spriteBatch);

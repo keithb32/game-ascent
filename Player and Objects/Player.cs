@@ -56,7 +56,7 @@ namespace Ascent.Player_and_Objects
 
         // values used to control charging the dash
         private float chargeAmount = 10f;
-        private float chargeMax = 90f;
+        private float chargeMax = 60f;
 
         // movement parameters
         private float acceleration = 1.2f;
@@ -86,7 +86,9 @@ namespace Ascent.Player_and_Objects
 
         private Texture2D tether;
 
-        public Player(ContentManager Content) : base(
+        private float scale = 2.0f;
+
+        public Player(ContentManager Content, int xPos=20, int yPos=20, float scale=2f) : base(
                 new Dictionary<string, Animation>()
                 {
                     {"IdleRight", new Animation(Content.Load<Texture2D>("Player/player-idle"), 4) },
@@ -100,19 +102,29 @@ namespace Ascent.Player_and_Objects
                     {"CrouchRight", new Animation(Content.Load<Texture2D>("Player/player-crouch"), 2) },
                     {"CrouchLeft", new Animation(Content.Load<Texture2D>("Player/player-crouch"), 2, true) }
                 },
-                 -38, 
-                 -50, 
-                 3.45f, 
-                 3.45f
+                 (int)(-19*scale),
+                 (int)(-25 * scale), 
+                 1.725f * scale, 
+                 1.725f*scale
             )
         {
-            Rect = new Rectangle(10, 10, 40, 60);
-            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height - 2, Rect.Width, 2);
-            Position = new Vector2(20, 20);
+            Rect = new Rectangle(10, 10, (int)(20*scale), (int)(30*scale));
+            FeetRect = new Rectangle(Rect.X, Rect.Y + Rect.Height -2, Rect.Width, 2);
+            Position = new Vector2(xPos, yPos);
             GrapplePoint = new Vector2(-1, -1);
             tether = Content.Load<Texture2D>("Player/tether");
             isDead = false;
-        }
+            this.scale = scale;
+            gravity = scale / 2;
+
+            // values used to control charging the dash
+            chargeAmount = chargeAmount * (scale / 2f);
+            chargeMax = chargeMax * (scale / 2f);
+
+            // movement parameters
+            acceleration = 1.2f * (scale / 2f);
+            MaxMoveSpeed = 15f * (scale / 2f);
+    }
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState, GamePadState gamePadState, Point GameBounds, TileManager tiles)
         {
@@ -205,7 +217,7 @@ namespace Ascent.Player_and_Objects
                 {
                     if (isGrounded && velocity.Y >= 0)
                     {
-                        velocity.Y = -20f;
+                        velocity.Y = -10f * scale;
                         animationToPlay = "Jump";
                     }
                 }
@@ -249,7 +261,7 @@ namespace Ascent.Player_and_Objects
                 {
                     if (chargeAmount < chargeMax)
                     {
-                        chargeAmount += 1f;
+                        chargeAmount += 0.5f * scale;
                     }
                 }
                 else
@@ -262,6 +274,7 @@ namespace Ascent.Player_and_Objects
                 // player is about to launch (just let go of space)
 
                 animationToPlay = "Crouch";
+                Debug.WriteLine("charge: " + chargeAmount);
                 if (facingDirection == "Left")
                 {
                     velocity += new Vector2(-1f, -0.2f) * chargeAmount;
@@ -344,6 +357,10 @@ namespace Ascent.Player_and_Objects
         // check if the player is currently grounded.
         private bool checkIfGrounded(Point GameBounds, TileManager tiles)
         {
+            if (checkBoundsWithSemisolids(FeetRect, tiles))
+            {
+                return true;
+            }
             bool ret = false;
             Position += new Vector2(0, 1);
             ret = checkBounds(Rect, GameBounds, tiles) || checkBoundsWithSemisolids(FeetRect, tiles) || checkBoundsWithBox(Rect, tiles.boxes).Count > 0;
@@ -380,7 +397,7 @@ namespace Ascent.Player_and_Objects
                     // If you're grounded, still apply a damping force to simulate firction (air movement while grappling is not damped bc it feels better like that)
                     if (checkIfGrounded(GameBounds, tiles))
                     {
-                        velocity.X *= 0.95f;
+                        velocity.X *= 0.92f;
                     }
                 }
             }
@@ -408,6 +425,10 @@ namespace Ascent.Player_and_Objects
 
             List<Box> boxCollisions = checkBoundsWithBox(MoveXRect, tiles.boxes);
 
+            if (checkBoundsWithSpikes(MoveXRect, tiles))
+            {
+                isDead = true;
+            }
 
             // see if that collider intersects with anything; if it does, stop velocity in that direction. Otherwise, move it there.
             if (checkBounds(MoveXRect, GameBounds, tiles))
@@ -502,7 +523,7 @@ namespace Ascent.Player_and_Objects
             {
                 Position += new Vector2(0, (int)velocity.Y);
             }
-
+            
         }
 
         // helper method for debugging

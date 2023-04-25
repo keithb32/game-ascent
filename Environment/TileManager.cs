@@ -38,13 +38,21 @@ namespace Ascent.Environment
         private Pickup goal;
         public bool goalReached;
 
-        private int level = 1;
-        private int maxLevel = 2;
+        public Vector2 playerSpawn = new Vector2(20, 20);
+
+        public int level = 1;
+        private int maxLevel = 3;
 
         public int numCherries = 0;
 
         private ContentManager con;
         private Game1 game;
+
+        public float scale;
+
+        private SpriteFont font;
+
+        public bool newLevel = false;
 
         [Flags]
         enum Trans
@@ -60,29 +68,43 @@ namespace Ascent.Environment
             Rotate_90AndFlip_H = Flip_H | Flip_V | Flip_D,
         }
 
-        public TileManager(ContentManager Content, Game1 theGame)
+        public TileManager(ContentManager Content, Game1 theGame, float scale=2.0f)
         {
             game = theGame;
             con = Content;
+            this.scale = scale;
             LoadLevel(1);
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");
             tilesetTexture = Content.Load<Texture2D>("Environment\\tileset");
             obstacleTexture = Content.Load<Texture2D>("Environment\\obstacle_tiles");
+            font = Content.Load<SpriteFont>("Fonts\\File");
         }
 
         // Load a level of a given number (assumes level tiled files will be in the Environment folder, and named LevelX , where X is the level number)
         public void LoadLevel(int level)
         {
+            if(level == 0)
+            {
+                return;
+            }
             if (level > maxLevel)
             {
                 game.Quit();
                 return;
             }
 
+            if(this.level != level)
+            {
+                newLevel = true;
+            }
+            
+
+            Debug.WriteLine("Level loading: " + level);
+
             //set up the tiles
             map = new TiledMap(con.RootDirectory + "\\Environment\\Level" + level + ".tmx");
-            map.TileHeight = 2 * map.TileHeight;
-            map.TileWidth = 2 * map.TileWidth;
+            map.TileHeight = (int)(scale * map.TileHeight);
+            map.TileWidth = (int)(scale * map.TileWidth);
 
             goalReached = false;
 
@@ -96,13 +118,25 @@ namespace Ascent.Environment
                 {
                     {"Idle", new Animation(con.Load<Texture2D>("Pickups/gem"), 5) }
                 };
-                goal = new Pickup(goalAnimation, 2 * (int)goalData.x, 2 * (int)goalData.y, 3.45f, 3.45f);
+                goal = new Pickup(goalAnimation, (int) (scale * goalData.x), (int)(scale * goalData.y), 3.45f, 3.45f);
             }
             else
             {
                 goal = null;
             }
-          
+
+            // set up player spawn
+            var playerSpawnLayer = map.Layers.FirstOrDefault(x => x.name == "PlayerSpawn");
+            if (playerSpawnLayer != null)
+            {
+                var playerSpawnData = map.Layers.First(x => x.name == "PlayerSpawn").objects.First();
+                playerSpawn = new Vector2((int) (scale* playerSpawnData.x), (int)(scale * playerSpawnData.y));
+            }
+            else
+            {
+                playerSpawn = new Vector2(20,20);
+            }
+
             // set up the pickups (cherries)
             cherries = new List<Pickup>();
 
@@ -117,7 +151,7 @@ namespace Ascent.Environment
             {
                 foreach (var obj in pickupLayer.objects)
                 {
-                    cherries.Add(new Pickup(cherryAnimation, (int)(2 * obj.x), (int)(2 * obj.y), 3.45f, 3.45f));
+                    cherries.Add(new Pickup(cherryAnimation, (int)(scale * obj.x), (int)(scale * obj.y), 3.45f, 3.45f));
                 }
             }
 
@@ -132,10 +166,10 @@ namespace Ascent.Environment
             if(boxLayer!= null){
                 foreach (var obj in boxLayer.objects)
                 {
-                    boxes.Add(new Box(boxAnimation, (int)(2 * obj.x), (int)(2 * obj.y), 3.45f, 3.45f));
+                    boxes.Add(new Box(boxAnimation, (int)(scale * obj.x), (int)(scale * obj.y), 3.45f, 3.45f));
                 }
             }
-            
+            this.level = level;
         }
 
         public void Update(GameTime gameTime, Point GameBounds, Player player)
@@ -259,7 +293,18 @@ namespace Ascent.Environment
             {
                 b.Draw(_spriteBatch);
             }
-        }
+
+            // draw text
+            var textLayer = map.Layers.FirstOrDefault(x => x.name == "Text");
+            if (textLayer != null)
+            {
+                foreach (var obj in textLayer.objects)
+                {
+                    _spriteBatch.DrawString(font, obj.name, new Vector2(scale*obj.x, scale*obj.y), Color.White);
+                }
+            }
+            }
+            
 
         // checks if the ground tile layer intersects with a rectangle; used for player collisions
         // Note: assumes that the tiles the player needs to collide with as solid walls are all in a tiled layer called "Ground"
@@ -271,6 +316,10 @@ namespace Ascent.Environment
                 for (int x = rect.Left / map.TileWidth; x < groundLayer.width && x < rect.Right / map.TileWidth + 1; x++)
                 {
                     var index = (y * groundLayer.width) + x;
+                    if(index < 0 || index > groundLayer.data.Length)
+                    {
+                        return true;
+                    }
                     if (groundLayer.data[index] != 0)
                     {
                         return true;
@@ -284,7 +333,7 @@ namespace Ascent.Environment
         public bool IntersectsWithSemisolids(Rectangle rect)
         {
             var semisolidLayer = map.Layers.FirstOrDefault(x => x.name == "Semisolids");
-            if(semisolidLayer == null)
+            if(semisolidLayer == null || semisolidLayer.data.Length==0)
             {
                 return false;
             }
@@ -307,6 +356,7 @@ namespace Ascent.Environment
 
         public bool IntersectsWithSpikes(Rectangle rect)
         {
+            int spikeHitboxSize = map.TileHeight /2;
             var spikeLayer = map.Layers.FirstOrDefault(x => x.name == "Spikes");
             if (spikeLayer == null)
                 return false;
@@ -318,10 +368,42 @@ namespace Ascent.Environment
                     if (spikeLayer.data[index] != 0)
                     {
                         // if spike collision is wonky, adj here probably
-                        if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight - 1, map.TileWidth, 2)))
+                        // we got a spike, we need to see which hitbox to apply
+
+                        //upward facing spike
+                        if (spikeLayer.data[index] == 199)
                         {
-                            return true;
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, (y+1) * map.TileHeight - spikeHitboxSize, map.TileWidth, spikeHitboxSize)))
+                            {
+                                return true;
+                            }
                         }
+                        // downward facing spike
+                        else if (spikeLayer.data[index] == 200)
+                        {
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight, map.TileWidth, spikeHitboxSize)))
+                            {
+                                return true;
+                            }
+                        }
+                        //left facing spike
+                        else if (spikeLayer.data[index] == 202)
+                        {
+                            if (rect.Intersects(new Rectangle((x + 1) * map.TileWidth - spikeHitboxSize, y * map.TileHeight, spikeHitboxSize, map.TileHeight)))
+                            {
+                                return true;
+                            }
+                        }
+                        //right facing spike
+                        else if (spikeLayer.data[index] == 201)
+                        {
+                            if (rect.Intersects(new Rectangle(x * map.TileWidth, y * map.TileHeight, spikeHitboxSize, map.TileHeight)))
+                            {
+                                return true;
+                            }
+                        }
+
+
                     }
                 }
             }
@@ -344,6 +426,7 @@ namespace Ascent.Environment
 
             if (goal != null && goal.hitbox.Intersects(rect))
             {
+                //LoadLevel(level + 1);
                 goalReached = true;
                 //level++;
                 //LoadLevel(level);
