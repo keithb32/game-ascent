@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace Ascent.Environment
 {
@@ -12,6 +13,7 @@ namespace Ascent.Environment
         private static SoundManager instance;
 
         private Dictionary<string, SoundEffectInstance> soundEffects;
+        private Dictionary<string, Song> music;
         
         private SoundManager(ContentManager Content) { 
             soundEffects = new Dictionary<string, SoundEffectInstance>();
@@ -20,6 +22,9 @@ namespace Ascent.Environment
             soundEffects.Add("ropeFire", Content.Load<SoundEffect>("Sounds/ropeFire").CreateInstance());
             soundEffects.Add("hitSpikes", Content.Load<SoundEffect>("Sounds/hitSpikes").CreateInstance());
             soundEffects.Add("dash", Content.Load<SoundEffect>("Sounds/dash").CreateInstance());
+            
+            music = new Dictionary<string, Song>(); 
+            music.Add("background", Content.Load<Song>("Sounds/backgroundMusic"));
         }
 
         public static SoundManager CreateInstance(ContentManager Content)
@@ -39,6 +44,15 @@ namespace Ascent.Environment
         {
             if (soundEffects.ContainsKey(soundName)){
                 soundEffects[soundName].Play();
+            }
+        }
+
+        public void PlayMusic(string songName)
+        {
+            MediaPlayer.Play(music[songName]);
+            if (songName == "background")
+            {
+                MediaPlayer.IsRepeating = true;
             }
         }
 

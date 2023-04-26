@@ -12,6 +12,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Content\File.spritefont" />
+    <None Remove="Content\Sounds\backgroundMusic.mp3" />
+    <None Remove="Content\Sounds\backgroundMusic.mp4" />
+    <None Remove="Content\Sounds\endLevel.mp3" />
+    <None Remove="Content\Sounds\ropeFire.mp3" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
     <None Remove="Content\obj\DesktopGL\net6.0\Content\Pickups\cherry.mgcontent" />
@@ -54,6 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Content\obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Sounds\endLevel.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

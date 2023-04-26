@@ -57,7 +57,7 @@ namespace Ascent
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
             
-            sounds.PlaySound("gameStart");
+            sounds.PlayMusic("background");
         }
 
         protected override void Initialize()
