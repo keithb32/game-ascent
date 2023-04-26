@@ -73,7 +73,7 @@ namespace Ascent.Environment
         {
             game = theGame;
             con = Content;
-            soundManager = SoundManager.GetInstance(Content);
+            soundManager = SoundManager.GetInstance();
             this.scale = scale;
             LoadLevel(1);
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");

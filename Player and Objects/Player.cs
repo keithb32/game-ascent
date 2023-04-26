@@ -134,10 +134,17 @@ namespace Ascent.Player_and_Objects
             // Check if the player is grappling with the mouse
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
+                
                 if (!grappling)
                 {
+
                     // only allow grapples into the ground layer of the tileManager
-                    if(tiles.Intersects(new Rectangle(mouseState.X, mouseState.Y, 1, 1))){
+                    if (tiles.Intersects(new Rectangle(mouseState.X, mouseState.Y, 1, 1)))
+                    {
+                        if ((keyboardState.IsKeyDown(Keys.W) || (velocity.Length() > 2)) && !isGrounded) { 
+                            SoundManager.GetInstance().PlaySound("ropeFire");
+                        }
+                        
                         grappling = true;
                         GrapplePoint = new Vector2(mouseState.X, mouseState.Y);
                         grappleHookLength = Vector2.Distance(Position, GrapplePoint);
@@ -149,6 +156,7 @@ namespace Ascent.Player_and_Objects
             {
                 if (!grappling)
                 {
+                    
                     grappling = true;
                     // you can use the right stick to aim a grapple in any direction
                     if(Math.Abs(gamePadState.ThumbSticks.Right.X) > 0.1f || Math.Abs(gamePadState.ThumbSticks.Right.Y) > 0.1f)
@@ -267,6 +275,7 @@ namespace Ascent.Player_and_Objects
                 else
                 {
                     state = playerState.Launch;
+                    SoundManager.GetInstance().PlaySound("dash");
                 }
             }
             else if (state == playerState.Launch)
@@ -334,6 +343,7 @@ namespace Ascent.Player_and_Objects
         {
             if (tiles.IntersectsWithSpikes(CollisionRect))
             {
+                SoundManager.GetInstance().PlaySound("hitSpikes");
                 return true;
             }
             return false;

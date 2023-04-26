@@ -262,3 +262,33 @@
 /processorParam:TextureFormat=Color
 /build:Player/tether.png
 
+#begin Sounds/dash.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/dash.mp3
+
+#begin Sounds/endLevel.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/endLevel.mp3
+
+#begin Sounds/gameStart.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/gameStart.mp3
+
+#begin Sounds/hitSpikes.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/hitSpikes.wav
+
+#begin Sounds/ropeFire.mp4
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ropeFire.mp4
+

@@ -14,10 +14,11 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Point GameBounds = new Point(1920, 1280);    // window resolution
+        private Point GameBounds = new Point(1920, 1080);    // window resolution
 
         private Player player1;
         private TileManager tiles;
+        private SoundManager sounds;
 
         private LevelMenu menu;
         private LevelEndMenu endMenu;
@@ -49,10 +50,14 @@ namespace Ascent
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            sounds = SoundManager.CreateInstance(Content);
             tiles = new TileManager(Content, this);
+            
             menu = new LevelMenu(this, GraphicsDevice, Content);
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
+            
+            sounds.PlaySound("gameStart");
         }
 
         protected override void Initialize()
@@ -174,7 +179,7 @@ namespace Ascent
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(color);
-            
+
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
             if (isPaused)
             {

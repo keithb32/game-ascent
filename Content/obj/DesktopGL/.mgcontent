@@ -4,30 +4,40 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Backgrounds/background_0.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Backgrounds/background_1.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Backgrounds/background_2.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Backgrounds/blackBackground.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Environment/obstacle_tiles.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Environment/tileset.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/File.spritefont</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Fonts/File.spritefont</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Fonts/MenuFont.spritefont</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Menu/medal_bronze.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Menu/medal_gold.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Menu/medal_silver.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Menu/menuBanner.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Objects/crate.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Pickups/cherry.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Pickups/gem.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/player-crouch.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/player-fall.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/player-idle.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/player-jump.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/player-run.png</File>
-    <File>C:/Users/Student/Documents/GitHub/game-ascent/Content/Player/tether.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_0.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_1.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_2.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/blackBackground.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Environment/obstacle_tiles.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Environment/tileset.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/File.spritefont</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Fonts/File.spritefont</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Fonts/MenuFont.spritefont</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Menu/medal_bronze.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Menu/medal_gold.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Menu/medal_silver.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Menu/menuBanner.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Objects/crate.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Pickups/cherry.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Pickups/gem.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/player-crouch.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/player-fall.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/player-idle.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/player-jump.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/player-run.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Player/tether.png</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Sounds/dash.mp3</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Sounds/endLevel.mp3</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Sounds/gameStart.mp3</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Sounds/hitSpikes.wav</File>
+    <File>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Sounds/ropeFire.mp4</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

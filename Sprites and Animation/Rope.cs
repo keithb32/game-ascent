@@ -1,4 +1,5 @@
-﻿using Ascent.Player_and_Objects;
+﻿using Ascent.Environment;
+using Ascent.Player_and_Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -46,6 +47,8 @@ namespace Ascent.Sprites_and_Animation
                 ropeSegments.Add(new RopeSegment(temp));
                 temp += directionOfRope;
             }
+            
+
         }
 
         // https://stackoverflow.com/questions/16403809/drawing-lines-in-c-sharp-with-xna
@@ -56,6 +59,7 @@ namespace Ascent.Sprites_and_Animation
             float angle = (float)Math.Acos(Vector2.Dot(v, -Vector2.UnitX));
             if (begin.Y > end.Y) angle = MathHelper.TwoPi - angle;
             spriteBatch.Draw(tether, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
+            
         }
 
         public void Draw(SpriteBatch _spriteBatch)

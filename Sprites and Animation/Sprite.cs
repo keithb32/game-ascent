@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ascent.Environment;
 
 namespace Ascent.Sprites_and_Animation
 {
@@ -32,6 +33,7 @@ namespace Ascent.Sprites_and_Animation
         }
 
         protected AnimationManager _animationManager;
+        protected SoundManager _soundManager;
         protected Dictionary<string, Animation> _animations;
 
 
@@ -42,6 +44,7 @@ namespace Ascent.Sprites_and_Animation
             _animations = animations;
             _animationManager = new AnimationManager(_animations.First().Value, Xpos, Ypos, Xscale, Yscale);
             _animationManager.Play(_animations.First().Value);
+            _soundManager = SoundManager.GetInstance();
         }
 
         public void LoadContent(GraphicsDeviceManager _graphics)
