@@ -12,7 +12,6 @@ using System.Xml;
 *  URL (source code): https://github.com/Oyyou/MonoGame_Tutorials/blob/master/MonoGame_Tutorials/Tutorial015/Managers/ScoreManager.cs
 *  URL (tutorial): https://www.youtube.com/watch?v=JzEwVCgALuY
 *  Software License: N/A
-*  
 ***************************************************************************************/
 
 
@@ -32,18 +31,23 @@ namespace Ascent.Scores
 
         public void Add(int level, float score)
         {
+
+            // If player has completed the level before, update the dictionary only if their new time is better
             if (bestTimes.ContainsKey(level)){
                 if (score < bestTimes[level]) {
                     bestTimes[level] = score;
                 }
             }
+
+            // If player hasn't completed the level before, update the dictionary
             else
             {
                 bestTimes[level] = score;
             }
             Save(this);
         }
-
+        
+        // Loads player's scores from xml file
         public static ScoreManager Load()
         {
             // If there isn't a file to load - create a new instance of "ScoreManager"
@@ -59,6 +63,8 @@ namespace Ascent.Scores
             }
         }
 
+
+        // Saves player's new best times to the xml file
         public static void Save(ScoreManager scoreManager)
         {
             // Overrides the file if it already exists

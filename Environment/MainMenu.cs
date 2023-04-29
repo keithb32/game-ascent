@@ -6,25 +6,33 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Ascent.Environment
 {
-    internal class LevelMenu
+    internal class MainMenu
     {
+        // MonoGame variables
         private Game1 _game;
         private GraphicsDevice _graphicsDevice;
         private ContentManager _content;
 
+        // Assets
         private Texture2D banner;
         private SpriteFont font;
+
+        // Menu state
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
 
-        public LevelMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
+        public MainMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
         {
+            // MonoGame variables
             _game = game;
             _graphicsDevice = graphicsDevice;
             _content = content;
+
+            // Assets
             banner = content.Load<Texture2D>("Menu/menuBanner");
             font = _content.Load<SpriteFont>("Fonts/MenuFont");
 
+            // Menu state
             menuItems = new List<MenuItem>
             {
             new MenuItem("Level 1", new Vector2(1920/2-75, 400), () => StartLevel(1)),

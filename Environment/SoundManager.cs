@@ -63,11 +63,7 @@ namespace Ascent.Environment
                 return soundEffects[soundName].State == SoundState.Playing;
             }
             return false;
-
         }
 
-
-
-        
     }
 }
