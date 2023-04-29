@@ -13,6 +13,7 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+
         // Background
         private Point GameBounds = new Point(1920, 1080); // window resolution
         List<Sprite> backgroundSprites = new List<Sprite>();
@@ -59,6 +60,8 @@ namespace Ascent
             mainMenu = new MainMenu(this, GraphicsDevice, Content);
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
+            
+            sounds.PlayMusic("background");
         }
 
         protected override void Initialize()
