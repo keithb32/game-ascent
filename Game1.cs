@@ -1,5 +1,6 @@
 ﻿using Ascent.Environment;
 using Ascent.Player_and_Objects;
+using Ascent.Scores;
 using Ascent.Sprites_and_Animation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,6 +20,7 @@ namespace Ascent
         private Player player1;
         private TileManager tiles;
         private SoundManager sounds;
+        private SpriteFont font;
 
         private LevelMenu menu;
         private LevelEndMenu endMenu;
@@ -52,7 +54,7 @@ namespace Ascent
             IsMouseVisible = true;
             sounds = SoundManager.CreateInstance(Content);
             tiles = new TileManager(Content, this);
-            
+            font = Content.Load<SpriteFont>("Fonts\\File");
             menu = new LevelMenu(this, GraphicsDevice, Content);
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
@@ -115,7 +117,6 @@ namespace Ascent
             if (player1.isDead)
             {
                 player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
-                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
             }
             // Pause game if player presses escape while not on main menu
             if (currentLevel > 0 && Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -152,7 +153,7 @@ namespace Ascent
             {
                 if (endMenu.time < 0.0f)
                 {
-                    endMenu.CallTime((float)gameTime.TotalGameTime.TotalMilliseconds);
+                    endMenu.CallTime((float)gameTime.TotalGameTime.TotalMilliseconds, currentLevel);
                 }
                 endMenu.Update(mouseState);
             }
@@ -200,8 +201,11 @@ namespace Ascent
                     backgroundSprite.Draw(_spriteBatch);
                 }
 
+                float levelTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
+                
                 tiles.Draw(_spriteBatch);
                 player1.Draw(_spriteBatch);
+                _spriteBatch.DrawString(font, endMenu.getTimeString(levelTime), new Vector2(1750, 25), Color.White);
             }
 
             _spriteBatch.End();

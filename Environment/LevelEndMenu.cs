@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
 using System;
+using Ascent.Scores;
 
 namespace Ascent.Environment
 {
@@ -13,6 +13,7 @@ namespace Ascent.Environment
         private Game1 _game;
         private GraphicsDevice _graphicsDevice;
         private ContentManager _content;
+        private ScoreManager _scores;
 
         private Texture2D banner;
         private Texture2D gold, silver, bronze;
@@ -23,12 +24,14 @@ namespace Ascent.Environment
 
         public float startTime;
         public float time;
+        public float bestTime;
 
         public LevelEndMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
         {
             _game = game;
             _graphicsDevice = graphicsDevice;
             _content = content;
+            _scores = ScoreManager.Load();
             banner = content.Load<Texture2D>("Menu/menuBanner");
             font = _content.Load<SpriteFont>("Fonts/MenuFont");
             gold = content.Load<Texture2D>("Menu/medal_gold");
@@ -37,8 +40,11 @@ namespace Ascent.Environment
 
             menuItems = new List<MenuItem>
             {
-                new MenuItem("TIME: " + time, new Vector2(1920/2-75, 500), () => { }),
-                new MenuItem("Next Level", new Vector2(1920/2-75, 600), () => NextLevel(game.currentLevel))
+                new MenuItem("SUMMARY ", new Vector2(1920/2-83, 325), () => { }),
+                new MenuItem("TIME: ", new Vector2(1920/2-200, 500), () => { }),
+                new MenuItem("BEST TIME: ", new Vector2(1920/2 + 50, 500), () => { }),
+                new MenuItem("Replay Level", new Vector2(1920/2-95, 625), () => { game.currentLevel -= 1; NextLevel(game.currentLevel); }),
+                new MenuItem("Next Level", new Vector2(1920/2-80, 675), () => NextLevel(game.currentLevel))
             };
             selectedMenuItemIndex = 0;
             startTime = -1.0f;
@@ -51,23 +57,23 @@ namespace Ascent.Environment
             _graphicsDevice.Clear(Color.Black);
 
             // TODO: Position this according to final window resolution
-            spriteBatch.Draw(banner, new Rectangle(1920 / 2 - 250, 100, 500, 150), Color.White);
+            spriteBatch.Draw(banner, new Rectangle(1920 / 2 - 245, 100, 500, 150), Color.White);
             if (time < goldTime)
             {
-                spriteBatch.Draw(gold, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+                spriteBatch.Draw(gold, new Rectangle(1920 / 2 - 45, 400, 80, 80), Color.White);
             }
             else if (time < silverTime)
             {
-                spriteBatch.Draw(silver, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+                spriteBatch.Draw(silver, new Rectangle(1920 / 2 - 45, 400, 80, 80), Color.White);
             }
             else if (time < bronzeTime)
             {
-                spriteBatch.Draw(bronze, new Rectangle(1920 / 2 - 50, 400, 80, 80), Color.White);
+                spriteBatch.Draw(bronze, new Rectangle(1920 / 2 - 45, 400, 80, 80), Color.White);
             }
 
             for (int i = 0; i < menuItems.Count; i++)
             {
-                Color color = (i == selectedMenuItemIndex) ? Color.White : Color.Gray;
+                Color color = (i == selectedMenuItemIndex && i > 2) ? Color.White : Color.Gray;
                 spriteBatch.DrawString(font, menuItems[i].text, menuItems[i].position, color);
             }
         }
@@ -101,11 +107,22 @@ namespace Ascent.Environment
             bronzeTime = splits[currentLevel, 2];
         }
 
-        public void CallTime(float endTime)
+        public void CallTime(float endTime, int currentLevel)
         {
             time = endTime - startTime;
             TimeSpan timeSpan = TimeSpan.FromMilliseconds(time);
-            menuItems[0].text = timeSpan.ToString(@"mm\:ss\:fff");
+
+            // Update score manager
+            _scores.Add(currentLevel, time);
+            menuItems[1].text = "Total Time\n" + TimeSpan.FromMilliseconds(time).ToString(@"mm\:ss\:fff");
+            menuItems[2].text = "Best Time\n" + TimeSpan.FromMilliseconds(_scores.bestTimes[currentLevel]).ToString(@"mm\:ss\:fff");            
+        }
+
+        public String getTimeString(float endTime)
+        {
+            float t = endTime - startTime;
+            TimeSpan timeSpan = TimeSpan.FromMilliseconds(t);
+            return timeSpan.ToString(@"mm\:ss\:fff");
         }
 
         private void NextLevel(int levelNumber)
