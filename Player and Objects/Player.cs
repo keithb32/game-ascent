@@ -409,6 +409,15 @@ namespace Ascent.Player_and_Objects
                     {
                         velocity.X *= 0.92f;
                     }
+                    else
+                    {
+                        float adjacent = Position.X - GrapplePoint.X;
+                        float opposite = Position.Y - GrapplePoint.Y;
+                        float angle = MathF.Atan2(opposite, adjacent);
+                        velocity.X *= 0.99f;
+                        velocity.Y += (float) (0.7 * Math.Sin(angle));
+                        
+                    }
                 }
             }
             else
