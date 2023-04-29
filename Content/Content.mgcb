@@ -13,12 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ../../../../../../Downloads/backgroundMusic.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:../../../../../../Downloads/backgroundMusic.mp3;Sounds/backgroundMusic.mp3
-
 #begin Backgrounds/background_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -267,6 +261,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Player/tether.png
+
+#begin Sounds/backgroundMusic.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/backgroundMusic.mp3
 
 #begin Sounds/dash.mp3
 /importer:Mp3Importer
