@@ -1,12 +1,10 @@
 ﻿using Ascent.Environment;
 using Ascent.Player_and_Objects;
-using Ascent.Scores;
 using Ascent.Sprites_and_Animation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Ascent
 {
@@ -15,74 +13,76 @@ namespace Ascent
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Point GameBounds = new Point(1920, 1080);    // window resolution
+        // Background
+        private Point GameBounds = new Point(1920, 1080); // window resolution
+        List<Sprite> backgroundSprites = new List<Sprite>();
+        private Color color = new Color(46, 90, 137);
+        private float scale = 2.0f;
 
-        private Player player1;
+        // Content
         private TileManager tiles;
         private SoundManager sounds;
         private SpriteFont font;
 
-        private LevelMenu menu;
+        // Menu
+        private MainMenu mainMenu;
         private LevelEndMenu endMenu;
-        public int currentLevel = 0;
-        private float[,] medalSplits; // in ms
-        public int nextLevel { get; set; } = 0;
-
         private PauseMenu pauseMenu;
+        public int currentLevel = 0;
         public bool isPaused { get; set; } = false;
         public bool isTransitioning { get; set; } = false;
+        public int nextLevel { get; set; } = 0;
 
-        List<Sprite> backgroundSprites = new List<Sprite>();
+        // Game state
+        private Player player1;
+        private float[,] medalSplits; // in ms
 
-        private Color color = new Color(46, 90, 137);
-
-        private float scale = 2.0f;
-
-
-        // inputs
+        // Inputs
         private KeyboardState keyboardState;
         private GamePadState gamePadState;
         private MouseState mouseState;
 
         public Game1()
         {
+            // Default monogame variables
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = GameBounds.X;
             _graphics.PreferredBackBufferHeight = GameBounds.Y;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            // Member variables
             sounds = SoundManager.CreateInstance(Content);
-            tiles = new TileManager(Content, this);
+            tiles = new TileManager(Content, this, scale);
             font = Content.Load<SpriteFont>("Fonts\\File");
-            menu = new LevelMenu(this, GraphicsDevice, Content);
+            mainMenu = new MainMenu(this, GraphicsDevice, Content);
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
-            
-            sounds.PlayMusic("background");
         }
 
         protected override void Initialize()
         {
-            base.Initialize();
-
-            medalSplits = new float[,] { 
+            medalSplits = new float[,] {
                 { 3000, 5000, 10000 }, // Level 1
                 { 3111, 5111, 11111 }, // Level 2
                 { 3222, 5222, 12222 }, // Level 3
                 { 3111, 5111, 11111 }, // Level 4
             };
+            sounds.PlayMusic("background");
+
+            base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            tiles = new TileManager(Content, this, scale);
-
+            // Player sprite
             player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             player1.LoadContent(_graphics);
 
+            // Level backgrounds
             var background0Animation = new Dictionary<string, Animation>()
             {
                 {"Idle", new Animation(Content.Load<Texture2D>("Backgrounds/background_0"), 1) }
@@ -109,33 +109,36 @@ namespace Ascent
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            if (endMenu.startTime < 0.0f)
-            {
-                endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-            }
-
+            // Respawn player
             if (player1.isDead)
             {
                 player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             }
+
             // Pause game if player presses escape while not on main menu
             if (currentLevel > 0 && Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 isPaused = true;
             }
-
+            // Switch to main menu
             if (nextLevel != currentLevel && nextLevel == 0)
             {
                 currentLevel = nextLevel;
             }
-            else if (nextLevel != currentLevel && nextLevel != 0) // Draw new tile layout if level has changed and we're not going to the main menu
+            // or switch to next level
+            else if (nextLevel != currentLevel && nextLevel != 0)
             {
                 currentLevel = nextLevel;
-                endMenu.time = -1.0f;
+
+                // Reset level timer
+                endMenu.elapsedTime = -1.0f;
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-                endMenu.setSplits(medalSplits, currentLevel - 1);
+
+                // Load tiles + medal splits for next level
+                endMenu.SetSplits(medalSplits, currentLevel - 1);
                 tiles.LoadLevel(currentLevel);
-                //jimmy addon
+
+                // Respawn player for next level
                 player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
             }
 
@@ -147,13 +150,13 @@ namespace Ascent
             }
             else if (currentLevel == 0)
             {
-                menu.Update(gameTime, mouseState);
+                mainMenu.Update(gameTime, mouseState);
             }
             else if (tiles.goalReached)
             {
-                if (endMenu.time < 0.0f)
+                if (endMenu.elapsedTime < 0.0f)
                 {
-                    endMenu.CallTime((float)gameTime.TotalGameTime.TotalMilliseconds, currentLevel);
+                    endMenu.RecordElapsedTime((float)gameTime.TotalGameTime.TotalMilliseconds, currentLevel);
                 }
                 endMenu.Update(mouseState);
             }
@@ -182,13 +185,14 @@ namespace Ascent
             GraphicsDevice.Clear(color);
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            
             if (isPaused)
             {
                 pauseMenu.Draw(_spriteBatch);
             }
-            else if (currentLevel == 0 || nextLevel == 0)
+            else if (currentLevel == 0 || nextLevel == 0) // need to check both current and next level to prevent tileset from displaying during menu transition
             {
-                menu.Draw(_spriteBatch);
+                mainMenu.Draw(_spriteBatch);
             }
             else if (tiles.goalReached)
             {
@@ -200,12 +204,11 @@ namespace Ascent
                 {
                     backgroundSprite.Draw(_spriteBatch);
                 }
-
                 float levelTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
                 
                 tiles.Draw(_spriteBatch);
                 player1.Draw(_spriteBatch);
-                _spriteBatch.DrawString(font, endMenu.getTimeString(levelTime), new Vector2(1750, 25), Color.White);
+                _spriteBatch.DrawString(font, endMenu.GetElapsedTime(levelTime), new Vector2(1750, 25), Color.White);
             }
 
             _spriteBatch.End();
