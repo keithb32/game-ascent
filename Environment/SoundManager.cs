@@ -65,8 +65,5 @@ namespace Ascent.Environment
             return false;
         }
 
-
-
-        
     }
 }

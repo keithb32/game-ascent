@@ -14,9 +14,11 @@ namespace Ascent.Environment
         private Game1 _game;
         private GraphicsDevice _graphicsDevice;
         private ContentManager _content;
+
+        private ScoreManager _scores;
+
         
         // Assets 
-        private ScoreManager _scores;
         private Texture2D banner;
         private Texture2D gold, silver, bronze;
         private SpriteFont font;
@@ -67,6 +69,7 @@ namespace Ascent.Environment
 
             // TODO: Position this according to final window resolution
             spriteBatch.Draw(banner, new Rectangle(1920 / 2 - 245, 100, 500, 150), Color.White);
+
             if (elapsedTime < goldTime)
             {
                 spriteBatch.Draw(gold, new Rectangle(1920 / 2 - 45, 400, 80, 80), Color.White);

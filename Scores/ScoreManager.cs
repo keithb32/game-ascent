@@ -31,12 +31,14 @@ namespace Ascent.Scores
 
         public void Add(int level, float score)
         {
+
             // If player has completed the level before, update the dictionary only if their new time is better
             if (bestTimes.ContainsKey(level)){
                 if (score < bestTimes[level]) {
                     bestTimes[level] = score;
                 }
             }
+
             // If player hasn't completed the level before, update the dictionary
             else
             {
@@ -44,7 +46,7 @@ namespace Ascent.Scores
             }
             Save(this);
         }
-
+        
         // Loads player's scores from xml file
         public static ScoreManager Load()
         {
@@ -60,6 +62,7 @@ namespace Ascent.Scores
                 return new ScoreManager(scores);
             }
         }
+
 
         // Saves player's new best times to the xml file
         public static void Save(ScoreManager scoreManager)

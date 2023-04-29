@@ -1,5 +1,6 @@
 ﻿using Ascent.Environment;
 using Ascent.Player_and_Objects;
+using Ascent.Scores;
 using Ascent.Sprites_and_Animation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +13,6 @@ namespace Ascent
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
 
         // Background
         private Point GameBounds = new Point(1920, 1080); // window resolution
@@ -123,13 +123,13 @@ namespace Ascent
             {
                 isPaused = true;
             }
+
             // Switch to main menu
             if (nextLevel != currentLevel && nextLevel == 0)
             {
                 currentLevel = nextLevel;
             }
-            // or switch to next level
-            else if (nextLevel != currentLevel && nextLevel != 0)
+            else if (nextLevel != currentLevel && nextLevel != 0) // Draw new tile layout if level has changed and we're not going to the main menu
             {
                 currentLevel = nextLevel;
 
@@ -193,6 +193,7 @@ namespace Ascent
             {
                 pauseMenu.Draw(_spriteBatch);
             }
+
             else if (currentLevel == 0 || nextLevel == 0) // need to check both current and next level to prevent tileset from displaying during menu transition
             {
                 mainMenu.Draw(_spriteBatch);
@@ -207,6 +208,7 @@ namespace Ascent
                 {
                     backgroundSprite.Draw(_spriteBatch);
                 }
+
                 float levelTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
                 
                 tiles.Draw(_spriteBatch);
