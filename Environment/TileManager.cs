@@ -46,6 +46,7 @@ namespace Ascent.Environment
         public int numCherries = 0;
 
         private ContentManager con;
+        private SoundManager soundManager;
         private Game1 game;
 
         public float scale;
@@ -72,6 +73,7 @@ namespace Ascent.Environment
         {
             game = theGame;
             con = Content;
+            soundManager = SoundManager.GetInstance();
             this.scale = scale;
             LoadLevel(1);
             tilesets = map.GetTiledTilesets(Content.RootDirectory + "\\Environment\\");
@@ -421,6 +423,8 @@ namespace Ascent.Environment
                     cherries.RemoveAt(i);
                     i--;
                     numCherries++;
+
+                    // Play pickup sound
                 }
             }
 
@@ -430,6 +434,9 @@ namespace Ascent.Environment
                 goalReached = true;
                 //level++;
                 //LoadLevel(level);
+
+                // Play sound
+                soundManager.PlaySound("endLevel");
             }
         }
     }

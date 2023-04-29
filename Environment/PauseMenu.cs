@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -9,32 +8,39 @@ namespace Ascent.Environment
 {
     internal class PauseMenu
     {
+        // MonoGame variables
         private Game1 _game;
         private GraphicsDevice _graphicsDevice;
         private ContentManager _content;
 
+        // Assets
         private SpriteFont font;
         private Texture2D blackTexture;
-        private float transitionAlpha;
+
+        // Menu state
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
+        private float transitionAlpha;
 
-        public PauseMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content)
-        {
+        public PauseMenu(Game1 game, GraphicsDevice graphicsDevice, ContentManager content) {
+
+            // MonoGame variables
             _game = game;
             _graphicsDevice = graphicsDevice;
             _content = content;
 
+            // Assets
             font = _content.Load<SpriteFont>("Fonts/MenuFont");
             blackTexture = _content.Load<Texture2D>("Backgrounds/blackBackground");
-            transitionAlpha = 0;
 
+            // Menu state
             menuItems = new List<MenuItem>
             {
             new MenuItem("Resume", new Vector2(1920/2-100, 450), () => {_game.isPaused = false;}),
             new MenuItem("Main Menu", new Vector2(1920/2-100, 500), () => {_game.isTransitioning = true;})
             };
             selectedMenuItemIndex = 0;
+            transitionAlpha = 0;
         }
 
 
@@ -99,6 +105,7 @@ namespace Ascent.Environment
                     _game.nextLevel = 0;
                     _game.isPaused = false;
                     transitionAlpha = 0f;
+                    
                 }
             }
 
