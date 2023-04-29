@@ -124,16 +124,16 @@ namespace Ascent
                 isPaused = true;
             }
 
-            // Draw new tile layout if level has changed and we're not going to the main menu
-            if (nextLevel != currentLevel)
+            if (nextLevel != currentLevel && nextLevel == 0)
+            {
+                currentLevel = nextLevel;
+            }
+            else if (nextLevel != currentLevel && nextLevel != 0) // Draw new tile layout if level has changed and we're not going to the main menu
             {
                 currentLevel = nextLevel;
                 endMenu.time = -1.0f;
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;
-                if(currentLevel != 0)
-                {
-                    endMenu.setSplits(medalSplits, currentLevel - 1);
-                }
+                endMenu.setSplits(medalSplits, currentLevel - 1);
                 tiles.LoadLevel(currentLevel);
                 //jimmy addon
                 player1 = new Player(Content, (int)tiles.playerSpawn.X, (int)tiles.playerSpawn.Y, scale);
@@ -186,7 +186,7 @@ namespace Ascent
             {
                 pauseMenu.Draw(_spriteBatch);
             }
-            else if (currentLevel == 0)
+            else if (currentLevel == 0 || nextLevel == 0)
             {
                 menu.Draw(_spriteBatch);
             }

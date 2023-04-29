@@ -99,6 +99,7 @@ namespace Ascent.Environment
                     _game.nextLevel = 0;
                     _game.isPaused = false;
                     transitionAlpha = 0f;
+                    
                 }
             }
 

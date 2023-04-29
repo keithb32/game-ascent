@@ -18,6 +18,8 @@ namespace Ascent.Environment
         private Texture2D banner;
         private Texture2D gold, silver, bronze;
         private SpriteFont font;
+        private Texture2D blackTexture;
+        private float transitionAlpha;
         private List<MenuItem> menuItems;
         private int selectedMenuItemIndex;
         private float goldTime, silverTime, bronzeTime;
@@ -37,6 +39,8 @@ namespace Ascent.Environment
             gold = content.Load<Texture2D>("Menu/medal_gold");
             silver = content.Load<Texture2D>("Menu/medal_silver");
             bronze = content.Load<Texture2D>("Menu/medal_bronze");
+            blackTexture = _content.Load<Texture2D>("Backgrounds/blackBackground");
+            transitionAlpha = 0;
 
             menuItems = new List<MenuItem>
             {
@@ -44,7 +48,8 @@ namespace Ascent.Environment
                 new MenuItem("TIME: ", new Vector2(1920/2-200, 500), () => { }),
                 new MenuItem("BEST TIME: ", new Vector2(1920/2 + 50, 500), () => { }),
                 new MenuItem("Replay Level", new Vector2(1920/2-95, 625), () => { game.currentLevel -= 1; NextLevel(game.currentLevel); }),
-                new MenuItem("Next Level", new Vector2(1920/2-80, 675), () => NextLevel(game.currentLevel))
+                new MenuItem("Next Level", new Vector2(1920/2-80, 675), () => NextLevel(game.currentLevel)),
+                new MenuItem("Back to Main Menu", new Vector2(1920/2-138, 725), () => {game.isTransitioning = true; })
             };
             selectedMenuItemIndex = 0;
             startTime = -1.0f;
@@ -73,9 +78,21 @@ namespace Ascent.Environment
 
             for (int i = 0; i < menuItems.Count; i++)
             {
-                Color color = (i == selectedMenuItemIndex && i > 2) ? Color.White : Color.Gray;
+                Color color = (i == selectedMenuItemIndex || i <= 2) ? Color.White : Color.Gray;
                 spriteBatch.DrawString(font, menuItems[i].text, menuItems[i].position, color);
             }
+
+            // If the game is transitioning, draw a black rectangle over the entire screen
+            if (_game.isTransitioning)
+            {
+                // Calculate size of screen and color of the black rectangle based on the current transition alpha
+                Rectangle screenRectangle = new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height);
+                Color color = Color.Black * transitionAlpha;
+
+                // Draw the black rectangle using the calculated size and color
+                spriteBatch.Draw(blackTexture, screenRectangle, color);
+            }
+
         }
 
         public void Update(MouseState mouseState)
@@ -98,6 +115,23 @@ namespace Ascent.Environment
                     }
                 }
             }
+
+            if (_game.isTransitioning)
+            {
+                // Gradually increase the transition alpha
+                transitionAlpha += 0.02f;
+
+                // If the transition is complete, switch to the main menu
+                if (transitionAlpha >= 1f)
+                {
+                    // Switch to the main menu
+                    _game.isTransitioning = false;
+                    _game.nextLevel = 0;
+                    _game.isPaused = false;
+                    transitionAlpha = 0f;
+                }
+            }
+
         }
 
         public void setSplits(float[,] splits, int currentLevel)
