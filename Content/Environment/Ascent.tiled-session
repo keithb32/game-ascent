@@ -10,15 +10,15 @@
     "fileStates": {
         "Level1.tmx": {
             "expandedObjectLayers": [
+                8,
                 6,
-                7,
-                8
+                7
             ],
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 4,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 512,
-                "y": 319.5
+                "x": 708.875,
+                "y": 193
             }
         },
         "Level2.tmx": {
@@ -29,16 +29,16 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 480,
-                "y": 320.66666666666663
+                "x": 479.33333333333337,
+                "y": 318.66666666666663
             }
         },
         "Level3.tmx": {
-            "scale": 1,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 428.5,
-                "y": 198.5
+                "x": 132.66666666666669,
+                "y": 435.99999999999994
             }
         },
         "Obstacles.tsx": {
