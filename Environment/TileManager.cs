@@ -41,7 +41,7 @@ namespace Ascent.Environment
         public Vector2 playerSpawn = new Vector2(20, 20);
 
         public int level = 1;
-        private int maxLevel = 3;
+        private int maxLevel = 4;
 
         public int numCherries = 0;
 
