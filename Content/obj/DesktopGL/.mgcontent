@@ -31,9 +31,19 @@
     <File>D:/CS4730/team-project/game-ascent/Content/Sounds/endLevel.mp3</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Sounds/gameStart.mp3</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Sounds/hitSpikes.wav</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Sounds/Music/Level1.wav</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Sounds/Music/Level2.wav</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Sounds/Music/Level3.wav</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Sounds/Music/Level4.wav</File>
+    <File>D:/CS4730/team-project/game-ascent/Content/Sounds/Music/Title.wav</File>
     <File>D:/CS4730/team-project/game-ascent/Content/Sounds/ropeFire.mp4</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
