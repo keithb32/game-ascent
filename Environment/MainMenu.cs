@@ -38,7 +38,8 @@ namespace Ascent.Environment
             new MenuItem("Level 1", new Vector2(1920/2-75, 400), () => StartLevel(1)),
             new MenuItem("Level 2", new Vector2(1920/2-75, 450), () => StartLevel(2)),
             new MenuItem("Level 3", new Vector2(1920/2-75, 500), () => StartLevel(3)),
-            new MenuItem("Exit", new Vector2(1920/2-75, 550), () => _game.Exit())
+            new MenuItem("Level 4", new Vector2(1920/2-75, 550), () => StartLevel(4)),
+            new MenuItem("Exit", new Vector2(1920/2-75, 600), () => _game.Exit())
             };
             selectedMenuItemIndex = 0;
         }

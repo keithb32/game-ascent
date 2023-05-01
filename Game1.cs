@@ -67,10 +67,10 @@ namespace Ascent
         protected override void Initialize()
         {
             medalSplits = new float[,] {
-                { 3000, 5000, 10000 }, // Level 1
-                { 3111, 5111, 11111 }, // Level 2
-                { 3222, 5222, 12222 }, // Level 3
-                { 3111, 5111, 11111 }, // Level 4
+                { 6000, 15000, 30000 }, // Level 1
+                { 6000, 12000, 20000 }, // Level 2
+                { 3000, 9000, 25000 }, // Level 3
+                { 12000, 35000, 45000 }, // Level 4
             };
 
             base.Initialize();
