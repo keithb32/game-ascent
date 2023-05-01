@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/Backgrounds/background_2.png</SourceFile>
-  <SourceTime>2023-04-07T12:17:51.9787722-04:00</SourceTime>
-  <DestFile>C:/Users/gbrig/Desktop/Spring2023/GameDesign/Project/game-ascent/Content/bin/DesktopGL/Backgrounds/background_2.xnb</DestFile>
-  <DestTime>2023-04-26T13:32:18.6231421-04:00</DestTime>
+  <SourceFile>D:/CS4730/team-project/game-ascent/Content/Backgrounds/background_2.png</SourceFile>
+  <SourceTime>2023-04-29T19:52:42.1408546-04:00</SourceTime>
+  <DestFile>D:/CS4730/team-project/game-ascent/Content/bin/DesktopGL/Backgrounds/background_2.xnb</DestFile>
+  <DestTime>2023-04-29T20:45:39.1373277-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2022-07-26T07:44:56-04:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
