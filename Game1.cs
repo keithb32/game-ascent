@@ -61,7 +61,7 @@ namespace Ascent
             endMenu = new LevelEndMenu(this, GraphicsDevice, Content);
             pauseMenu = new PauseMenu(this, GraphicsDevice, Content);
             
-            sounds.PlayMusic("background");
+            sounds.PlayMusic("Title");
         }
 
         protected override void Initialize()
@@ -72,7 +72,6 @@ namespace Ascent
                 { 3222, 5222, 12222 }, // Level 3
                 { 3111, 5111, 11111 }, // Level 4
             };
-            sounds.PlayMusic("background");
 
             base.Initialize();
         }
@@ -128,11 +127,14 @@ namespace Ascent
             if (nextLevel != currentLevel && nextLevel == 0)
             {
                 currentLevel = nextLevel;
+                // update music
+                sounds.PlayMusic("Title");
             }
             else if (nextLevel != currentLevel && nextLevel != 0) // Draw new tile layout if level has changed and we're not going to the main menu
             {
                 currentLevel = nextLevel;
-
+                // update music
+                sounds.PlayMusic("Level" + currentLevel);
                 // Reset level timer
                 endMenu.elapsedTime = -1.0f;
                 endMenu.startTime = (float)gameTime.TotalGameTime.TotalMilliseconds;

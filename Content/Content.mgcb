@@ -292,6 +292,36 @@
 /processorParam:Quality=Best
 /build:Sounds/hitSpikes.wav
 
+#begin Sounds/Music/Level1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Music/Level1.wav
+
+#begin Sounds/Music/Level2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Music/Level2.wav
+
+#begin Sounds/Music/Level3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Music/Level3.wav
+
+#begin Sounds/Music/Level4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Music/Level4.wav
+
+#begin Sounds/Music/Title.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Music/Title.wav
+
 #begin Sounds/ropeFire.mp4
 /importer:Mp3Importer
 /processor:SoundEffectProcessor

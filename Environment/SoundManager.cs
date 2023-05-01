@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 
@@ -13,7 +14,8 @@ namespace Ascent.Environment
         private static SoundManager instance;
 
         private Dictionary<string, SoundEffectInstance> soundEffects;
-        private Dictionary<string, Song> music;
+        private Dictionary<string, SoundEffectInstance> music;
+        private SoundEffectInstance currentSong;
         
         private SoundManager(ContentManager Content) { 
             soundEffects = new Dictionary<string, SoundEffectInstance>();
@@ -23,8 +25,12 @@ namespace Ascent.Environment
             soundEffects.Add("hitSpikes", Content.Load<SoundEffect>("Sounds/hitSpikes").CreateInstance());
             soundEffects.Add("dash", Content.Load<SoundEffect>("Sounds/dash").CreateInstance());
             
-            music = new Dictionary<string, Song>(); 
-            music.Add("background", Content.Load<Song>("Sounds/backgroundMusic"));
+            music = new Dictionary<string, SoundEffectInstance>(); 
+            music.Add("Title", Content.Load<SoundEffect>("Sounds/Music/Title").CreateInstance());
+            music.Add("Level1", Content.Load<SoundEffect>("Sounds/Music/Level1").CreateInstance());
+            music.Add("Level2", Content.Load<SoundEffect>("Sounds/Music/Level2").CreateInstance());
+            music.Add("Level3", Content.Load<SoundEffect>("Sounds/Music/Level3").CreateInstance());
+            music.Add("Level4", Content.Load<SoundEffect>("Sounds/Music/Level4").CreateInstance());
         }
 
         public static SoundManager CreateInstance(ContentManager Content)
@@ -42,18 +48,18 @@ namespace Ascent.Environment
 
         public void PlaySound(string soundName)
         {
-            if (soundEffects.ContainsKey(soundName)){
-                soundEffects[soundName].Play();
+            if (soundEffects.TryGetValue(soundName, out var effect)){
+                effect.Play();
             }
         }
 
         public void PlayMusic(string songName)
         {
-            MediaPlayer.Play(music[songName]);
-            if (songName == "background")
-            {
-                MediaPlayer.IsRepeating = true;
-            }
+
+            currentSong?.Stop();
+            music[songName].IsLooped = true;
+            music[songName].Play();
+            currentSong = music[songName];
         }
 
         public bool IsPlaying(string soundName)
